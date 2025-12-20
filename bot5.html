@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chatbot</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- Chat Avatar -->
+    <div class="chat-avatar" id="chatAvatar">
+      <img class="sewak-pic" src="/assets/sewak-avatar.png" alt="sewak-pic" />
+    </div>
+    <!-- Chat Container -->
+    <div class="chat-container" id="chatContainer">
+      <!-- Custom message box for system alerts (e.g., STT not supported) -->
+      <div id="systemMessage" class=""></div>
+      <!-- Header -->
+      <div class="chat-header">
+        <div class="header-content">
+          <img
+            class="avatar-img"
+            src="/assets/sewak-avatar.png"
+            alt="sewak-pic"
+          />
+          <div class="header-text">
+            <h2>Sewak <span class="ai-badge">AI</span></h2>
+            <p>iHRMS AI Assistant</p>
+          </div>
+        </div>
+        <button class="unmute-btn" id="muteButton">
+          <i class="fa-solid fa-volume-xmark"></i>
+        </button>
+        <button class="mute-btn" id="unmuteButton">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button class="close-btn" id="closeBtn">×</button>
+      </div>
+      <!-- Messages -->
+      <div class="messages-container" id="messagesContainer">
+        <!-- Welcome section will be inserted here -->
+      </div>
+      <!-- Input Area -->
+      <div class="input-container">
+        <div class="input-wrapper">
+          <button class="hamburger-btn" id="hamburgerBtn">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="Type your question here..."
+            autocomplete="off"
+          />
+          <!-- NEW VOICE BUTTON -->
+          <button class="voice-btn" id="micBtn">
+            <i class="fa-solid fa-microphone-lines"></i>
+          </button>
+          <!-- END NEW VOICE BUTTON -->
+          <button class="send-btn" id="sendBtn">
+            <span style="display: block">➤</span>
+          </button>
+        </div>
+      </div>
+      <!-- Branding -->
+      <div class="branding">
+        Powered by <strong>iHRMS</strong>
+        <i id="disclaimer" class="fa-solid fa-circle-info"></i>
+      </div>
+
+      <!-- Disclaimer Bottom Sheet -->
+      <div class="bottom-sheet-overlay" id="disclaimerOverlay"></div>
+
+      <div class="bottom-sheet" id="disclaimerSheet">
+        <div class="bottom-sheet-header">
+          <h3>Disclaimer Information & Policy</h3>
+          <button class="close-btn" id="disclaimerCloseBtn">×</button>
+        </div>
+        <div class="bottom-sheet-content">
+          <div class="disclaimer-body">
+            <!-- Header -->
+            <section class="welcome-text">
+              <p class="subtext">
+                Please review the following guidance before interacting with the
+                AI Assistant.
+              </p>
+            </section>
+
+            <!-- Section: Purpose Notice -->
+            <section class="welcome-text">
+              <div>
+                <i class="fa-solid fa-bullseye xi"></i>
+                <b>Purpose of the AI Assistant</b>
+              </div>
+              <p>
+                This AI Assistant is provided for
+                <strong>informational purposes only</strong>. Always verify
+                critical decisions with official iHRMS Support Helpdesk Team.
+              </p>
+            </section>
+
+            <!-- Section: General Usage Info -->
+            <section class="welcome-text">
+              <div>
+                <i class="fa-solid fa-user-gear xi"></i>
+                <b>General Usage Notice</b>
+              </div>
+              <p>
+                This chatbot provides general information for facilitation only.
+                Usage for legal or administrative purposes is subject to
+                validation against relevant acts/rules and reference documents.
+              </p>
+            </section>
+
+            <!-- Section: Privacy & Data Safety -->
+            <section class="welcome-text">
+              <div>
+                <i class="fa-solid fa-shield-halved xi"></i
+                ><b>Chatbot Privacy Policy</b>
+              </div>
+              <ol>
+                <li>
+                  <strong>Information Accuracy:</strong>
+                  The chatbot is an automated system and may not always provide
+                  100% accurate information. Completeness and timeliness cannot
+                  be guaranteed.
+                </li>
+                <li>
+                  <strong>Do Not Share Personal Data:</strong>
+                  Users should not enter any personal information (e.g., PAN
+                  Card, Aadhaar, email address, passwords, account numbers,
+                  address, phone number, etc.) unless specifically asked by the
+                  chatbot.
+                </li>
+                <li>
+                  <strong>Usage Restriction:</strong>
+                  The chatbot must not be used for commercial purposes or
+                  integrated into any free/paid service without authorization
+                  from iHRMS Team.
+                </li>
+                <li>
+                  <strong>Reporting Inaccuracies:</strong>
+                  If you find any incorrect or misleading information, please
+                  contact us so we can address it.
+                </li>
+              </ol>
+            </section>
+
+            <!-- Section: Final Note -->
+            <section class="welcome-text">
+              <div>
+                <i class="fa-solid fa-lock xi"></i><b>Your Data Privacy</b>
+              </div>
+              <p>Your data privacy and security are important to us.</p>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALL Services Bottom Sheet Overlay -->
+      <div class="bottom-sheet-overlay" id="bottomSheetOverlay"></div>
+      <!-- ALL Services Bottom Sheet -->
+      <div class="bottom-sheet" id="bottomSheet">
+        <div class="bottom-sheet-header">
+          <h3>Services</h3>
+          <button class="close-btn" id="sheetCloseBtn">×</button>
+        </div>
+        <div class="bottom-sheet-content">
+          <!-- Salary Section -->
+          <div class="menu-section">
+            <div class="menu-section-title">Salary</div>
+            <div class="menu-grid">
+              <div class="menu-item">
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-receipt"></i>
+                </div>
+                <div class="menu-item-label">Pay Slip</div>
+              </div>
+              <div class="menu-item">
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+                <div class="menu-item-label">Tax Subscription</div>
+              </div>
+              <div class="menu-item">
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+                <div class="menu-item-label">Projected Salary</div>
+              </div>
+            </div>
+          </div>
+          <!-- Leave Section -->
+          <div class="menu-section">
+            <div class="menu-section-title">Leave</div>
+            <div class="menu-grid">
+              <div class="menu-item">
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-calendar-plus"></i>
+                </div>
+                <div class="menu-item-label">Apply Leave</div>
+              </div>
+              <div class="menu-item">
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div class="menu-item-label">Leave Balance</div>
+              </div>
+              <div class="menu-item featured">
+                <span class="new-badge">NEW</span>
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div class="menu-item-label">Reporting Officer</div>
+              </div>
+              <div class="menu-item">
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="menu-item-label">Leave Status</div>
+              </div>
+            </div>
+          </div>
+          <!-- ACR -->
+          <div class="menu-section">
+            <div class="menu-section-title">ACR Management</div>
+            <div class="menu-grid">
+              <div class="menu-item">
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+                <div class="menu-item-label">Pending ACR</div>
+              </div>
+              <div class="menu-item">
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-tasks"></i>
+                </div>
+                <div class="menu-item-label">ACR Status</div>
+              </div>
+              <div class="menu-item featured">
+                <span class="new-badge">NEW</span>
+                <div class="menu-item-icon">
+                  <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="menu-item-label">ACR Grading</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>
