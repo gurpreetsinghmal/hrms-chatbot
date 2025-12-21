@@ -45,6 +45,7 @@ const systemMessage = document.getElementById("systemMessage"); // NEW: System m
 
 localStorage.clear();
 localStorage.setItem("mute", "false");
+localStorage.setItem("model", "ollama");
 
 // Typing Indicator HTML Template
 const TYPING_INDICATOR_HTML = ChatTemplates.chatIndicator();
@@ -325,8 +326,10 @@ async function simulateBotResponse(userMessage) {
 
       //reset all storage (except speaker mute) beacuse process is completed
       let prev = localStorage.getItem("mute");
+      let prevmodel = localStorage.getItem("model");
       localStorage.clear();
       localStorage.setItem("mute", prev);
+      localStorage.setItem("model", prevmodel);
 
       return; // important: prevent immediate rendering
     }

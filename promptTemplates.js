@@ -6,6 +6,8 @@ export const PromptTemplates = (userMessage, currentUser) => {
     description: proc.description,
   }));
 
+  const model = localStorage.getItem("model") || "ollama";
+
   return {
     rules: {
       firstrule: "the below rules must be strictly followed while responding.",
@@ -87,5 +89,6 @@ export const PromptTemplates = (userMessage, currentUser) => {
       wordLimit: 10,
     },
     message: userMessage,
+    model: model,
   };
 };
