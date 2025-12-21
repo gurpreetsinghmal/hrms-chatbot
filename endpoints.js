@@ -10,4 +10,7 @@ export const Endpoints = {
   acr: {
     grading: { url: "/grading", method: "post" },
   },
+  profile: {
+    details: { url: "/profile", method: "post" },
+  },
 };

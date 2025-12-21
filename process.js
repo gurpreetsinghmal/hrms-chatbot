@@ -41,4 +41,15 @@ export const Processes = {
       Employee_Code: null,
     },
   },
+  Profile_details: {
+    title: "Profile_details",
+    description:
+      "Profile Details gives you complete details of current logged in employee",
+    questions: [
+      "Please confirm if you are asking for your Profile Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
 };

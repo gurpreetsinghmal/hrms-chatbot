@@ -396,6 +396,12 @@ async function simulateBotResponse(userMessage) {
           reqmethod = Endpoints.acr.grading.method;
           msgTemplate = Templates.leaveTemplate.id;
           break;
+        case 3:
+          processTitle = Processes.Profile_details.title;
+          xendpoint = Endpoints.profile.details.url;
+          reqmethod = Endpoints.profile.details.method;
+          msgTemplate = Templates.profileTemplate.id;
+          break;
         default:
       }
 

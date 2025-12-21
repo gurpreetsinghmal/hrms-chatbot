@@ -1,20 +1,10 @@
 import { Processes } from "./process.js";
 
 export const PromptTemplates = (userMessage, currentUser) => {
-  const processes = [
-    {
-      process_name: Processes.Pay_Slip.title,
-      description: Processes.Pay_Slip.description,
-    },
-    {
-      process_name: Processes.Leave_Balance.title,
-      description: Processes.Leave_Balance.description,
-    },
-    {
-      process_name: Processes.ACR_Grading.title,
-      description: Processes.ACR_Grading.description,
-    },
-  ];
+  const processes = Object.values(Processes).map((proc) => ({
+    title: proc.title,
+    description: proc.description,
+  }));
 
   return {
     rules: {

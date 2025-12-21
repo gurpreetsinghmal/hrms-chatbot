@@ -1,3 +1,4 @@
+import { constants } from "./constants.js";
 import { PromptTemplates } from "./promptTemplates.js";
 export class BotService {
   async doApiCall(userMessage) {
@@ -31,8 +32,7 @@ export class BotService {
 
     // console.log("Request Body:", bodyContent);
 
-    let SERVER_URL = "http://10.44.237.214/";
-    // let SERVER_URL = "http://localhost:3000";
+    let SERVER_URL = constants.SERVER_URL;
 
     try {
       let response = await fetch(SERVER_URL, {
@@ -61,7 +61,7 @@ export class BotService {
 
     // console.log("Request Body:", bodyContent);
 
-    let SERVER_URL = "http://10.44.237.214" + xendpoint;
+    let SERVER_URL = constants.SERVER_URL + xendpoint;
     // let SERVER_URL = "http://localhost:3000";
 
     try {
