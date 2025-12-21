@@ -2,9 +2,11 @@ import { ChatTemplates } from "./chatTemplates.js";
 import { BotService } from "./botService.js";
 import { Processes } from "./process.js";
 import { Endpoints } from "./endpoints.js";
-import { Templates } from "./templates/leaveTemplate.js";
+import { Templates } from "./Templates.js";
+import { runProcessFlow } from "./runProcessFlow.js";
+
 // Chat Storage
-const chatStorage = {
+export const chatStorage = {
   messages: [],
   firstMessageSent: false,
   save() {
@@ -40,8 +42,6 @@ const bottomSheetOverlay = document.getElementById("bottomSheetOverlay");
 const sheetCloseBtn = document.getElementById("sheetCloseBtn");
 const micBtn = document.getElementById("micBtn"); // NEW: Voice button element
 const systemMessage = document.getElementById("systemMessage"); // NEW: System message box
-const muteButton = document.getElementById("muteButton");
-const unmuteButton = document.getElementById("unmuteButton");
 
 localStorage.clear();
 localStorage.setItem("mute", "false");
@@ -292,7 +292,6 @@ async function simulateBotResponse(userMessage) {
   const activeProcessTitle = window.localStorage.getItem("process");
 
   if (activeProcessTitle && activeProcessTitle !== "false") {
-    // console.log(userMessage, "========user message");
     let processResponse = await runProcessFlow(activeProcessTitle, userMessage);
 
     console.log("===>", processResponse);
@@ -308,39 +307,23 @@ async function simulateBotResponse(userMessage) {
 
         //  Show typing indicator here
         showTypingIndicator();
-
-        
-
-        let dbagent = new BotService();
-        await dbagent
-          .doDBApiCall(
-            processResponse.xendpoint,
-            processResponse.reqmethod,
-            processResponse.params
-          )
-          .then((res) => {
-            let dbresult = res;
-            console.log("DB RESULT=>", dbresult);
-            // get template
-            const formattedHtml =
-              Templates[processResponse.msgTemplate].format(dbresult);
-
-            hideTypingIndicator();
-            chatStorage.addMessage("bot", formattedHtml);
-            renderMessages();
-          })
-          .catch((e) => {
-            console.error("DB Exception=>", e);
-            throw $e;
-          });
+        //---------------------------------------------------------------
+        // STEP 1(a): Make call to Database for request
+        // STEP 1(b):it also render result into suitable template
+        makeDBcall(processResponse);
+        // process completed here
+        //--------------------------------------------------------------
       } else {
-        //if aborted
+        //---------------------------------------------------------------
+        // STEP 1(c): If ABort the process just render output of thanks
+        //---------------------------------------------------------------
         chatStorage.addMessage("bot", processResponse.output);
         hideTypingIndicator();
         renderMessages();
         speakMessage(processResponse.output);
       }
 
+      //reset all storage (except speaker mute) beacuse process is completed
       let prev = localStorage.getItem("mute");
       localStorage.clear();
       localStorage.setItem("mute", prev);
@@ -348,7 +331,7 @@ async function simulateBotResponse(userMessage) {
       return; // important: prevent immediate rendering
     }
 
-    // Output the bot's response (next question or completion message)
+    // Output the bot's response (next question or other reposnses)
     botResponse = processResponse.output;
 
     // Hide indicator and output response immediately
@@ -357,13 +340,6 @@ async function simulateBotResponse(userMessage) {
     renderMessages();
     speakMessage(botResponse);
 
-    if (processResponse.templateid != null) {
-      chatStorage.addMessage("bot", processResponse.listContainer);
-      renderMessages();
-      //empty your template
-      processResponse = null;
-    }
-
     // EXIT: Do not proceed to the API call/initialization logic
     return;
   }
@@ -371,10 +347,6 @@ async function simulateBotResponse(userMessage) {
   // ----------------------------------------------------------------------
   // STEP 2: No active process. Proceed with API call (Initialization)
   // ----------------------------------------------------------------------
-
-  // Only call the API if no process is currently active.
-  // The conditional check `if (window.localStorage.getItem('process') !== 'true')`
-  // is now handled by the check for `activeProcessTitle` above.
 
   await botService
     .doApiCall(userMessage)
@@ -394,12 +366,9 @@ async function simulateBotResponse(userMessage) {
   // STEP 3: Handle API Response (Start Flow or Generic Response)
   // ----------------------------------------------------------------------
   try {
-    // console.error(botResponse, "check 1");
-
-    // **IMPORTANT CHANGE:** Set the process flag to the process name (e.g., 'Pay_Slip')
-    // and only ask the FIRST question.
     botResponse = botResponse.trim();
     const processCount = Object.keys(Processes).length;
+    // check whether return a process number
     if (!isNaN(Number(botResponse))) {
       if (Number(botResponse) > processCount - 1) {
         botResponse = "Sorry unable to process.";
@@ -430,7 +399,15 @@ async function simulateBotResponse(userMessage) {
         default:
       }
 
+      // ----------------------------------------------------------------------
+      // STEP 3(a): IT Starts the Dummy Bot Process
+      // STEP 3(a): Set the process flag to the process name (e.g., 'Pay_Slip')
+      // --IMPORTANT--
+      // Set all api,method,template for dummy Bot
+      // ----------------------------------------------------------------------
+
       // Start flow
+      //
       window.localStorage.setItem("process", processTitle);
       window.localStorage.setItem("api", xendpoint);
       window.localStorage.setItem("method", reqmethod);
@@ -460,148 +437,6 @@ async function simulateBotResponse(userMessage) {
     renderMessages();
     speakMessage(msg);
   }
-}
-
-function loadProcessParams(processId) {
-  const key = `process_params_${processId}`;
-  const storedParams = sessionStorage.getItem(key);
-
-  if (storedParams) {
-    return JSON.parse(storedParams);
-  } else {
-    // Return a deep copy of the default parameters to avoid modifying the original 'Processes' template
-    return JSON.parse(JSON.stringify(Processes[processId].params));
-  }
-}
-
-/**
- * Saves the current parameters state for a process to sessionStorage.
- */
-function saveProcessParams(processId, params) {
-  const key = `process_params_${processId}`;
-  sessionStorage.setItem(key, JSON.stringify(params));
-}
-function isParamsCompleted(params) {
-  // Check if any value in the params object is still null.
-  return Object.values(params).every((value) => value !== null);
-}
-
-async function runProcessFlow(processId, userMessage = null) {
-  const process = Processes[processId];
-
-  if (!process) {
-    return { output: "Error: Invalid process ID.", processCompleted: true };
-  }
-
-  // 1. LOAD: Use the new helper to load the persistent state
-  const params = loadProcessParams(processId);
-  //console.log("load params", URLSearchParams);
-  const paramKeys = Object.keys(params);
-
-  // ----------------------------------------------------------------------
-  // STEP 1: Process the last user message to fill the current missing param
-  // ----------------------------------------------------------------------
-  let wasUpdated = false;
-  if (userMessage !== null) {
-    let keyToUpdate = null;
-
-    // Iterate backward to find the last parameter that is still null
-    for (let i = 0; i < paramKeys.length; i++) {
-      const key = paramKeys[i];
-      if (params[key] === null) {
-        keyToUpdate = key;
-        break;
-      }
-    }
-
-    if (keyToUpdate !== null) {
-      if (
-        keyToUpdate == "confirmation" &&
-        userMessage.toUpperCase() !== "YES"
-      ) {
-        chatStorage.firstMessageSent = false;
-        return {
-          output: `Happy to help you soon. Please choose any services.`,
-          processCompleted: true,
-          type: "abort",
-        };
-      }
-      // Update the parameter with the user's message
-      params[keyToUpdate] = userMessage;
-      wasUpdated = true;
-      //console.log(`Parameter updated: ${keyToUpdate} = ${userMessage}`);
-    }
-  }
-
-  // --- CRITICAL SAVE POINT ---
-  // Save the state immediately if an update occurred or if this is the first run.
-  if (wasUpdated || userMessage === null) {
-    saveProcessParams(processId, params);
-  }
-
-  // ----------------------------------------------------------------------
-  // STEP 2: Check status and determine the next action
-  // ----------------------------------------------------------------------
-
-  const currentMissingParamKey = getNextMissingParamKey(params);
-  //   console.log(currentMissingParamKey, "current missing params");
-  let response;
-
-  if (isParamsCompleted(params)) {
-    // All parameters filled.
-    window.localStorage.setItem("process", "false");
-    sessionStorage.removeItem(`process_params_${processId}`);
-
-    let dbresult;
-    let xendpoint = localStorage.getItem("api");
-    let reqmethod = localStorage.getItem("method");
-    let msgTemplate = localStorage.getItem("msgTemplate");
-
-    response = {
-      output: `Thank you we are preparing your data.`,
-      xendpoint: xendpoint,
-      reqmethod: reqmethod,
-      params: params,
-      msgTemplate: msgTemplate,
-      processCompleted: true,
-      type: "success",
-    };
-  } else if (currentMissingParamKey) {
-    // Parameters still missing. Ask the next question.
-    const nextQuestion = getQuestionForParam(processId, currentMissingParamKey);
-    response = {
-      output: nextQuestion,
-      processCompleted: false,
-    };
-    // The state was already saved above. No need to save again here.
-  }
-
-  return response;
-}
-
-function getNextMissingParamKey(params) {
-  //   console.log("getNextMissingParamKey", params);
-  for (const key in params) {
-    if (params[key] === null) {
-      //   console.log("getNextMissingParamKey", "returning key", key);
-      return key;
-    }
-  }
-
-  //   console.log("getNextMissingParamKey", "returning null");
-  return null; // All parameters are filled
-}
-
-function getQuestionForParam(processId, paramKey) {
-  //   console.log("gettting question and logging param key", paramKey);
-  const process = Processes[processId];
-  const paramKeys = Object.keys(process.params);
-  const index = paramKeys.indexOf(paramKey);
-
-  if (index !== -1 && index < process.questions.length) {
-    return process.questions[index];
-  }
-  return "Error: Could not find question for this parameter.";
 }
 
 function normalizeBotHtml(html) {
@@ -684,17 +519,6 @@ function handleChipClick(event) {
   }
 }
 
-function toggleChat(open) {
-  if (open) {
-    chatContainer.classList.add("active");
-    chatAvatar.classList.add("hidden");
-    renderMessages(); // Render messages or welcome screen
-  } else {
-    chatContainer.classList.remove("active");
-    chatAvatar.classList.remove("hidden");
-  }
-}
-
 function toggleBottomSheet(open) {
   if (open) {
     bottomSheet.classList.add("active");
@@ -709,32 +533,6 @@ function toggleBottomSheet(open) {
 // Chat Toggle
 chatAvatar.addEventListener("click", () => toggleChat(true));
 closeBtn.addEventListener("click", () => toggleChat(false));
-
-muteButton.addEventListener("click", () => {
-  if (window.localStorage.getItem("mute") == "true") {
-    unmuteButton.style.display = "flex";
-    muteButton.style.display = "none";
-  }
-  ToggleSpeaker();
-});
-
-unmuteButton.addEventListener("click", () => {
-  if (window.localStorage.getItem("mute") == "false") {
-    unmuteButton.style.display = "none";
-    muteButton.style.display = "flex";
-  }
-  ToggleSpeaker();
-});
-
-function ToggleSpeaker() {
-  let value = localStorage.getItem("mute");
-
-  if (value == "true") {
-    localStorage.setItem("mute", "false");
-  } else {
-    localStorage.setItem("mute", "true");
-  }
-}
 
 // Input and Send
 sendBtn.addEventListener("click", () => sendMessage(messageInput.value.trim()));
@@ -783,25 +581,39 @@ document.addEventListener("DOMContentLoaded", () => {
   toggleChat(false);
 });
 
-const disclaimerBtn = document.getElementById("disclaimer");
-const disclaimerOverlay = document.getElementById("disclaimerOverlay");
-const disclaimerSheet = document.getElementById("disclaimerSheet");
-const disclaimerCloseBtn = document.getElementById("disclaimerCloseBtn");
+function toggleChat(open) {
+  if (open) {
+    chatContainer.classList.add("active");
+    chatAvatar.classList.add("hidden");
+    renderMessages(); // Render messages or welcome screen
+  } else {
+    chatContainer.classList.remove("active");
+    chatAvatar.classList.remove("hidden");
+  }
+}
 
-// Open Disclaimer Sheet
-disclaimerBtn.addEventListener("click", () => {
-  disclaimerOverlay.classList.add("active");
-  disclaimerSheet.classList.add("active");
-});
+async function makeDBcall(processResponse) {
+  let dbagent = new BotService();
+  await dbagent
+    .doDBApiCall(
+      processResponse.xendpoint,
+      processResponse.reqmethod,
+      processResponse.params
+    )
+    .then((res) => {
+      let dbresult = res;
+      console.log("DB RESULT=>", dbresult);
+      // get template
+      const formattedHtml =
+        Templates[processResponse.msgTemplate].format(dbresult);
 
-// Close Disclaimer Sheet
-disclaimerCloseBtn.addEventListener("click", () => {
-  disclaimerOverlay.classList.remove("active");
-  disclaimerSheet.classList.remove("active");
-});
-
-// Also allow overlay click to close
-disclaimerOverlay.addEventListener("click", () => {
-  disclaimerOverlay.classList.remove("active");
-  disclaimerSheet.classList.remove("active");
-});
+      hideTypingIndicator();
+      // Output the bot's response (final DB success reposnses)
+      chatStorage.addMessage("bot", formattedHtml);
+      renderMessages();
+    })
+    .catch((e) => {
+      console.error("DB Exception=>", e);
+      throw $e;
+    });
+}
