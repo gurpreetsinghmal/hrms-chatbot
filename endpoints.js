@@ -4,7 +4,7 @@ export const Endpoints = {
     check: { url: "/check", method: "post" },
   },
   leave: {
-    apply: { url: "/books", method: "get" },
+    status: { url: "/leavestatus", method: "post" },
     balance: { url: "/leavebalance", method: "get" },
   },
   acr: {

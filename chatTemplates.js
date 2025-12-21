@@ -42,7 +42,7 @@ export const ChatTemplates = {
           <span>Check In</span>
           <span class="chip-new-badge">NEW</span>
         </div>
-        <div class="chip" data-action="Leave Status">
+        <div class="chip" data-action="Leave Application Status">
           <i class="fa-solid fa-clock chip-icon"></i>
           <span>Leave Status</span>
         </div>

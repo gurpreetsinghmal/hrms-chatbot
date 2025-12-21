@@ -13,18 +13,18 @@ export class BotService {
       firstName: "Emily",
       lastName: "Johnson",
       maidenName: "Smith",
-      age: 29,
+      age: "29 years",
       gender: "female",
       email: "emily.johnson@x.dummyjson.com",
       phone: "+81 965-431-3024",
       username: "emilys",
       password: "emilyspass",
-      birthDate: "1996-5-30",
+      birthDate: "30-05-1989",
       image:
         "https://www.gavinpublishers.com/admin/assets/editors_image/1508827486updated_picture1389863627.jpg",
       bloodGroup: "O-",
-      height: 193.24,
-      weight: 63.16,
+      height: "193.24",
+      weight: "63.16",
       eyeColor: "Green",
       nicknames: ["john", "dave", "nick"],
     };
@@ -42,7 +42,7 @@ export class BotService {
       });
 
       let data = await response.json();
-      console.log("Response Status:", data);
+      // console.log("Response Status:", data);
       // let jsondata = JSON.parse(data);
       return data;
     } catch (error) {

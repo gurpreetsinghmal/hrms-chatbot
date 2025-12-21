@@ -369,14 +369,15 @@ async function simulateBotResponse(userMessage) {
     botResponse = botResponse.trim();
     const processCount = Object.keys(Processes).length;
     // check whether return a process number
-    if (!isNaN(Number(botResponse))) {
+    if (!isNaN(Number(botResponse)) && Number.isInteger(Number(botResponse))) {
+      // console.log(Number(botResponse), processCount);
       if (Number(botResponse) > processCount - 1) {
         botResponse = "Sorry unable to process.";
       }
     }
 
     // if it is a valid service
-    if (!isNaN(Number(botResponse))) {
+    if (!isNaN(Number(botResponse)) && Number.isInteger(Number(botResponse))) {
       switch (Number(botResponse)) {
         case 0:
           processTitle = Processes.Pay_Slip.title;
@@ -401,6 +402,12 @@ async function simulateBotResponse(userMessage) {
           xendpoint = Endpoints.profile.details.url;
           reqmethod = Endpoints.profile.details.method;
           msgTemplate = Templates.profileTemplate.id;
+          break;
+        case 4:
+          processTitle = Processes.Leave_Status.title;
+          xendpoint = Endpoints.leave.status.url;
+          reqmethod = Endpoints.leave.status.method;
+          msgTemplate = Templates.leaveTemplate.id;
           break;
         default:
       }
