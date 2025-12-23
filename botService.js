@@ -1,4 +1,5 @@
 import { constants } from "./constants.js";
+import { checkUserEncrptedAndFetch } from "./loggeduser.js";
 import { PromptTemplates } from "./promptTemplates.js";
 export class BotService {
   async doApiCall(userMessage) {
@@ -51,6 +52,9 @@ export class BotService {
   }
 
   async doDBApiCall(xendpoint, xmethod = "GET", xbody) {
+    // check we have encypted userid if not then fetched
+    checkUserEncrptedAndFetch();
+
     let headersList = {
       Accept: "*/*",
       "User-Agent": "Thunder Client (https://www.thunderclient.com)",
@@ -79,10 +83,10 @@ export class BotService {
         });
       }
 
-      let data = await response.json();
-      console.log("Response Status:", data);
+      let rawdata = await response.json();
+      console.log("Response Status:", rawdata);
       // let jsondata = JSON.parse(data);
-      return data;
+      return rawdata;
     } catch (error) {
       throw error;
     }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pa-IN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,12 +34,21 @@
             <p>iHRMS AI Assistant</p>
           </div>
         </div>
+        <!-- chatbot size -->
+        <button class="unmute-btn" id="contract">
+          <i class="fa-solid fa-down-left-and-up-right-to-center"></i>
+        </button>
+        <button class="mute-btn" id="enlarge">
+          <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+        </button>
+        <!-- chat bot thinking model -->
         <button class="unmute-btn" id="gemini">
           <i class="fa-solid fa-cloud"></i>
         </button>
         <button class="mute-btn" id="ollama">
           <i class="fa-solid fa-server"></i>
         </button>
+        <!-- chat bot speaker -->
         <button class="unmute-btn" id="muteButton">
           <i class="fa-solid fa-volume-xmark"></i>
         </button>
@@ -264,8 +273,10 @@
       </div>
     </div>
     <script type="module" src="index.js"></script>
+    <script type="module" src="loggeduser.js"></script>
     <script src="mutebot.js"></script>
     <script src="servercloud.js"></script>
+    <script src="sizingbot.js"></script>
     <script src="disclaimer.js"></script>
   </body>
 </html>

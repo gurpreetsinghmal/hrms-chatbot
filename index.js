@@ -46,6 +46,7 @@ const systemMessage = document.getElementById("systemMessage"); // NEW: System m
 localStorage.clear();
 localStorage.setItem("mute", "false");
 localStorage.setItem("model", "ollama");
+localStorage.setItem("size", "enlarge");
 
 // Typing Indicator HTML Template
 const TYPING_INDICATOR_HTML = ChatTemplates.chatIndicator();
@@ -71,14 +72,11 @@ function hideSystemMessage() {
 
 // --- Text-to-Speech Setup (UPDATED to use Male Voice and Rate 0.8) ---
 function speakMessage(texthtml) {
-  if (localStorage.getItem("mute") === "true") return;
   let text = texthtml.replace(/(<([^>]+)>)/gi, "");
   text = text.replace(
     /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|\uD83E[\uDD00-\uDDFF])/g,
     ""
   );
-
-  //   console.log(text);
 
   if ("speechSynthesis" in window) {
     // Stop any current speech
@@ -209,7 +207,7 @@ if (SpeechRecognition) {
     const capturedText = messageInput.value.trim();
     if (capturedText) {
       // You can uncomment the line below if you want messages to send automatically upon speech recognition completion
-      // sendMessage(capturedText);
+      sendMessage(capturedText);
     }
   };
 } else {
@@ -324,12 +322,14 @@ async function simulateBotResponse(userMessage) {
         speakMessage(processResponse.output);
       }
 
-      //reset all storage (except speaker mute) beacuse process is completed
+      //reset all storage (except speaker mute,model,size) beacuse process is completed
       let prev = localStorage.getItem("mute");
       let prevmodel = localStorage.getItem("model");
+      let prevsize = localStorage.getItem("size");
       localStorage.clear();
       localStorage.setItem("mute", prev);
       localStorage.setItem("model", prevmodel);
+      localStorage.setItem("size", prevsize);
 
       return; // important: prevent immediate rendering
     }
@@ -410,6 +410,12 @@ async function simulateBotResponse(userMessage) {
           processTitle = Processes.Leave_Status.title;
           xendpoint = Endpoints.leave.status.url;
           reqmethod = Endpoints.leave.status.method;
+          msgTemplate = Templates.leaveTemplate.id;
+          break;
+        case 5:
+          processTitle = Processes.Helpdesk_support.title;
+          xendpoint = Endpoints.support.helpdesk.url;
+          reqmethod = Endpoints.support.helpdesk.method;
           msgTemplate = Templates.leaveTemplate.id;
           break;
         default:
@@ -618,10 +624,16 @@ async function makeDBcall(processResponse) {
     )
     .then((res) => {
       let dbresult = res;
-      console.log("DB RESULT=>", dbresult);
-      // get template
-      const formattedHtml =
-        Templates[processResponse.msgTemplate].format(dbresult);
+      console.log("DB RESULT=>", dbresult.data);
+      let formattedHtml;
+      if (dbresult.status == "s") {
+        // get template
+        formattedHtml = Templates[processResponse.msgTemplate].format(
+          dbresult.data
+        );
+      } else {
+        formattedHtml = dbresult.message;
+      }
 
       hideTypingIndicator();
       // Output the bot's response (final DB success reposnses)
@@ -630,6 +642,6 @@ async function makeDBcall(processResponse) {
     })
     .catch((e) => {
       console.error("DB Exception=>", e);
-      throw $e;
+      throw e;
     });
 }

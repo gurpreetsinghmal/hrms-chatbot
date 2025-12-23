@@ -16,6 +16,7 @@ export function buildDynamicTable(data) {
 
   // Start building table HTML
   let html = `
+    <div class="xresponsive">
     <table class="dynamic-table">
       <thead>
         <tr>
@@ -37,6 +38,7 @@ export function buildDynamicTable(data) {
   html += `
       </tbody>
     </table>
+    </div>
   `;
 
   return html;

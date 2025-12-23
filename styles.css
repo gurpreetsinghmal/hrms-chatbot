@@ -424,8 +424,8 @@ body {
 }
 
 .message-bubble {
-  max-width: 75%;
-  padding: 12px 16px;
+  max-width: 90%;
+  padding: 10px;
   border-radius: 18px;
   font-size: 15px;
   line-height: 1.5;
@@ -956,6 +956,35 @@ img {
 
 .res-count {
   color: var(--accent-blue);
+}
+
+/* responsive  table content with scroll bars*/
+.xresponsive {
+  overflow: auto; /* Use auto so it only shows when needed */
+  max-width: 100%;
+
+  /* For Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #cccccc transparent;
+}
+
+/* For Chrome, Safari, and Edge */
+.xresponsive::-webkit-scrollbar {
+  height: 4px; /* Height for horizontal scroll */
+  width: 4px; /* Width for vertical scroll */
+}
+
+.xresponsive::-webkit-scrollbar-track {
+  background: transparent; /* Makes the track invisible */
+}
+
+.xresponsive::-webkit-scrollbar-thumb {
+  background-color: #cccccc; /* The actual scroll handle */
+  border-radius: 5px; /* Makes it rounded and sleek */
+}
+
+.xresponsive::-webkit-scrollbar-thumb:hover {
+  background-color: #999999; /* Darkens on hover */
 }
 
 .dynamic-table {

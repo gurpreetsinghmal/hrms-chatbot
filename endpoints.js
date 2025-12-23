@@ -13,4 +13,7 @@ export const Endpoints = {
   profile: {
     details: { url: "/profile", method: "post" },
   },
+  support: {
+    helpdesk: { url: "/support-directory", method: "post" },
+  },
 };

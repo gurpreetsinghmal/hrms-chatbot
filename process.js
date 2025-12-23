@@ -66,4 +66,14 @@ export const Processes = {
       appid: null,
     },
   },
+  Helpdesk_support: {
+    title: "Helpdesk_support",
+    description:
+      "Helpdesk support provides you email and contact details of support staff for telephonic conversation",
+    questions: ["Please confirm if need Helpdesk Support contact? YES or NO"],
+    params: {
+      confirmation: null,
+      stateid: 3,
+    },
+  },
 };
