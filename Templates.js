@@ -1,6 +1,7 @@
 import { buildDownloadPdf } from "./components/_buildDownloadPdf.js";
 import { buildDynamicTable } from "./components/_buildDynamicTable.js";
 import { buildImageCard } from "./components/_buildimagecard.js";
+import { buildSalarySlip } from "./components/salary/_payslip.js";
 import { buildServiceBookAddress } from "./components/servicebook/_address.js";
 import { buildServiceBookEducation } from "./components/servicebook/_education.js";
 import { buildServiceBookFamily } from "./components/servicebook/_family.js";
@@ -11,9 +12,9 @@ import { buildServiceBookPersonal } from "./components/servicebook/_personal.js"
 import { buildServiceBookTraining } from "./components/servicebook/_training.js";
 
 export const Templates = {
-  payslipTemplate: {
-    id: "payslipTemplate",
-    format: (res) => buildDownloadPdf(res),
+  GetSalaryPayslip: {
+    id: "GetSalaryPayslip",
+    format: (res) => buildSalarySlip(res),
   },
   leaveTemplate: {
     id: "leaveTemplate",

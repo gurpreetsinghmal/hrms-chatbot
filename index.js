@@ -384,10 +384,10 @@ async function simulateBotResponse(userMessage) {
     if (!isNaN(Number(botResponse)) && Number.isInteger(Number(botResponse))) {
       switch (Number(botResponse)) {
         case 0:
-          processTitle = Processes.Pay_Slip.title;
+          processTitle = Processes.Salary_Pay_Slip.title;
           xendpoint = Endpoints.salary.payslip.url;
           reqmethod = Endpoints.salary.payslip.method;
-          msgTemplate = Templates.payslipTemplate.id;
+          msgTemplate = Templates.GetSalaryPayslip.id;
           break;
         case 1:
           processTitle = Processes.Leave_Balance.title;
@@ -683,10 +683,8 @@ async function makeDBcall(processResponse) {
       } else {
         formattedHtml = `
         <div style="border-left: 5px solid #d9534f; background: #f121; padding: 12px 20px;color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-  <span style="color: #d9534f; font-weight: bold;">Request Failed:</span>${dbresult.message}</div>
-        <div style="background-color: #fff2f2; border: 1px solid #dc3545; color: #dc3545; padding: 15px; border-radius: 4px; font-family: sans-serif; margin: 10px 0;">
-            <strong>${dbresult.message}</strong>
-          </div>`;
+  <span style="color: #d9534f; font-weight: bold;">Request Failed : ${dbresult.message} </span></div>
+        `;
       }
 
       hideTypingIndicator();

@@ -1,7 +1,6 @@
 export const Endpoints = {
   salary: {
-    payslip: { url: "/payslip", method: "post" },
-    check: { url: "/check", method: "post" },
+    payslip: { url: "/GetSalaryPayslip", method: "post" },
   },
   leave: {
     status: { url: "/leavestatus", method: "post" },

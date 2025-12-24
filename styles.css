@@ -903,7 +903,7 @@ body {
   max-width: 100%;
 }
 
-img {
+.profile {
   width: 200px;
   display: block;
   object-fit: cover;

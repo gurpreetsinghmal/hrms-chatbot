@@ -1,17 +1,15 @@
 export const Processes = {
-  Pay_Slip: {
-    title: "Pay_Slip",
+  Salary_Pay_Slip: {
+    title: "Salary_Pay_Slip",
     description:
-      "Pay slip also known as Salary Slip is a statement of salary credited into account.this tells about amount balance credited to your bank account",
+      "Pay slip also known as Salary Slip is a statement of salary credited.A digital record that provides an itemized breakdown of an employee's monthly earnings, statutory deductions, and final net take-home pay",
     questions: [
       "Please confirm if you are asking for your payslip? YES or NO",
-      "Please tell me you name?",
       "Please specify the month as number? example for february = 02",
       "Please specify the year as number? example 2025",
     ],
     params: {
       confirmation: null,
-      name: null,
       month: null,
       year: null,
     },

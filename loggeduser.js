@@ -1,4 +1,5 @@
 import { buildDynamicTable } from "./components/_buildDynamicTable.js";
+import { buildSalarySlip } from "./components/salary/_payslip.js";
 import { constants } from "./constants.js";
 
 export async function checkUserEncrptedAndFetch() {
