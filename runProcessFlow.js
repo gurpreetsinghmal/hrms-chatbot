@@ -30,10 +30,12 @@ export async function runProcessFlow(processId, userMessage = null) {
     }
 
     if (keyToUpdate !== null) {
-      if (
-        keyToUpdate == "confirmation" &&
-        userMessage.toUpperCase() !== "YES"
-      ) {
+      const cleanMessage = userMessage
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+        .toLowerCase()
+        .trim();
+      const isYes = /^(yes|fine|y|yeah|yup|ok)s*$/i.test(cleanMessage);
+      if (keyToUpdate == "confirmation" && !isYes) {
         chatStorage.firstMessageSent = false;
         return {
           output: `Happy to help you soon. Please choose any services.`,

@@ -76,4 +76,90 @@ export const Processes = {
       stateid: 3,
     },
   },
+  Service_Book_Address: {
+    title: "Service_Book_Address",
+    description:
+      "Service Book Address provides you address details of user like current address,permanent address and correspondence address",
+    questions: ["Please confirm if need your Address Details? YES or NO"],
+    params: {
+      confirmation: null,
+    },
+  },
+  Service_Book_Education: {
+    title: "Service_Book_Education",
+    description:
+      "Service Book Education provides information about education details like institution,year,percentage of marks and course name",
+    questions: [
+      "Please confirm if you as asking about Education Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  Service_Book_Family: {
+    title: "Service_Book_Family",
+    description:
+      "Family details of service book provides information about family relations like father,mother,children,wife,spouse",
+    questions: [
+      "Please confirm if you as asking about Family Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  Service_Book_Joining: {
+    title: "Service_Book_Joining",
+    description:
+      "Joining details of service book provides information date of inital joining, mode of recruitment, GPF or CPF Employee etc",
+    questions: [
+      "Please confirm if you as asking about Joining Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  Service_Book_Nomination: {
+    title: "Service_Book_Nomination",
+    description:
+      "Nomination details of service book tells who the employee has nominated for benefits like Gratuity, Pension, or Group Insurance in case of an eventuality. ",
+    questions: [
+      "Please confirm if you as asking about Nomination Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  Service_Book_Personal: {
+    title: "Service_Book_Personal",
+    description:
+      "Personal details of service book provides information Contains core identity like Name, DOB, Blood Group,caste",
+    questions: [
+      "Please confirm if you as asking about Personal Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  Service_Book_History: {
+    title: "Service_Book_History",
+    description:
+      "Servide History details of service book provides information all previous postings, transfers, promotions, and designations from the date of joining until now",
+    questions: [
+      "Please confirm if you as asking about History Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  Service_Book_Training: {
+    title: "Service_Book_Training",
+    description:
+      "ists all professional workshops, induction programs, and specialized training courses the employee has completed during their service",
+    questions: [
+      "Please confirm if you as asking about Training Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
 };

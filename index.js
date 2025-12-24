@@ -4,6 +4,7 @@ import { Processes } from "./process.js";
 import { Endpoints } from "./endpoints.js";
 import { Templates } from "./Templates.js";
 import { runProcessFlow } from "./runProcessFlow.js";
+import { checkUserEncrptedAndFetch } from "./loggeduser.js";
 
 // Chat Storage
 export const chatStorage = {
@@ -207,7 +208,7 @@ if (SpeechRecognition) {
     const capturedText = messageInput.value.trim();
     if (capturedText) {
       // You can uncomment the line below if you want messages to send automatically upon speech recognition completion
-      sendMessage(capturedText);
+      //sendMessage(capturedText);
     }
   };
 } else {
@@ -417,6 +418,54 @@ async function simulateBotResponse(userMessage) {
           xendpoint = Endpoints.support.helpdesk.url;
           reqmethod = Endpoints.support.helpdesk.method;
           msgTemplate = Templates.leaveTemplate.id;
+          break;
+        case 6:
+          processTitle = Processes.Service_Book_Address.title;
+          xendpoint = Endpoints.servicebook.address.url;
+          reqmethod = Endpoints.servicebook.address.method;
+          msgTemplate = Templates.ServiceAddressTemplate.id;
+          break;
+        case 7:
+          processTitle = Processes.Service_Book_Education.title;
+          xendpoint = Endpoints.servicebook.education.url;
+          reqmethod = Endpoints.servicebook.education.method;
+          msgTemplate = Templates.ServiceEducationTemplate.id;
+          break;
+        case 8:
+          processTitle = Processes.Service_Book_Family.title;
+          xendpoint = Endpoints.servicebook.family.url;
+          reqmethod = Endpoints.servicebook.family.method;
+          msgTemplate = Templates.ServiceFamilyTemplate.id;
+          break;
+        case 9:
+          processTitle = Processes.Service_Book_Joining.title;
+          xendpoint = Endpoints.servicebook.joining.url;
+          reqmethod = Endpoints.servicebook.joining.method;
+          msgTemplate = Templates.ServiceJoinigTemplate.id;
+          break;
+        case 10:
+          processTitle = Processes.Service_Book_Nomination.title;
+          xendpoint = Endpoints.servicebook.nomination.url;
+          reqmethod = Endpoints.servicebook.nomination.method;
+          msgTemplate = Templates.ServiceNominationTemplate.id;
+          break;
+        case 11:
+          processTitle = Processes.Service_Book_Personal.title;
+          xendpoint = Endpoints.servicebook.personal.url;
+          reqmethod = Endpoints.servicebook.personal.method;
+          msgTemplate = Templates.ServicePersonalTemplate.id;
+          break;
+        case 12:
+          processTitle = Processes.Service_Book_History.title;
+          xendpoint = Endpoints.servicebook.history.url;
+          reqmethod = Endpoints.servicebook.history.method;
+          msgTemplate = Templates.ServiceHistoryTemplate.id;
+          break;
+        case 13:
+          processTitle = Processes.Service_Book_Training.title;
+          xendpoint = Endpoints.servicebook.training.url;
+          reqmethod = Endpoints.servicebook.training.method;
+          msgTemplate = Templates.ServiceTrainingTemplate.id;
           break;
         default:
       }
@@ -632,7 +681,12 @@ async function makeDBcall(processResponse) {
           dbresult.data
         );
       } else {
-        formattedHtml = dbresult.message;
+        formattedHtml = `
+        <div style="border-left: 5px solid #d9534f; background: #f121; padding: 12px 20px;color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+  <span style="color: #d9534f; font-weight: bold;">Request Failed:</span>${dbresult.message}</div>
+        <div style="background-color: #fff2f2; border: 1px solid #dc3545; color: #dc3545; padding: 15px; border-radius: 4px; font-family: sans-serif; margin: 10px 0;">
+            <strong>${dbresult.message}</strong>
+          </div>`;
       }
 
       hideTypingIndicator();

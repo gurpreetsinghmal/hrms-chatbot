@@ -1,3 +1,4 @@
+import { buildDynamicTable } from "./components/_buildDynamicTable.js";
 import { constants } from "./constants.js";
 
 export async function checkUserEncrptedAndFetch() {
@@ -32,4 +33,5 @@ export async function checkUserEncrptedAndFetch() {
     console.log("User is already logged in. Encypt API call ignored.");
   }
 }
+
 await checkUserEncrptedAndFetch();

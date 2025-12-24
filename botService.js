@@ -67,6 +67,16 @@ export class BotService {
 
     let SERVER_URL = constants.SERVER_URL + xendpoint;
     // let SERVER_URL = "http://localhost:3000";
+    //adding user identity
+
+    // Step 1: Convert string to Object
+    let obj = JSON.parse(bodyContent);
+
+    // Step 2: Add the new property
+    obj.loggeduser = sessionStorage.getItem("loggeduser");
+
+    // Step 3: Convert back to string (if needed)
+    bodyContent = JSON.stringify(obj);
 
     try {
       let response;
