@@ -1,15 +1,31 @@
 export const Endpoints = {
   salary: {
+    //3 services
     payslip: { url: "/GetSalaryPayslip", method: "post" },
+    current: { url: "/GetAnnualSalaryStatement", method: "post" },
+    projected: { url: "/GetAnnualSalaryStatement", method: "post" },
+    tax: { url: "/GetSalaryTaxDeducation", method: "post" },
   },
   leave: {
-    status: { url: "/leavestatus", method: "post" },
-    balance: { url: "/leavebalance", method: "get" },
+    balance: { url: "/GetLeaveBalance", method: "post" },
+    status: { url: "/GetLeaveStatus", method: "post" },
+    reporting: { url: "/GetReportingOfficer", method: "post" },
+    requests: { url: "/GetLeaveRequestsOfEmployees", method: "post" },
   },
   acr: {
-    grading: { url: "/grading", method: "post" },
+    grading: { url: "/GetACR_APAR_GRADING", method: "post" },
+  },
+  loan: {
+    recovery: { url: "/GetLoanNames", method: "post" },
+  },
+  qms: {
+    ticket: { url: "/GetComplaintinfo", method: "post" },
+  },
+  calander: {
+    holidays: { url: "/GetHolidays", method: "post" },
   },
   servicebook: {
+    //8 services
     address: { url: "/GetServiceBookAddress", method: "post" },
     education: { url: "/GetServiceBookEducation", method: "post" },
     family: { url: "/GetServiceBookFamilyDetail", method: "post" },

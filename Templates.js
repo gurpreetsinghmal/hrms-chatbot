@@ -1,7 +1,16 @@
 import { buildDownloadPdf } from "./components/_buildDownloadPdf.js";
 import { buildDynamicTable } from "./components/_buildDynamicTable.js";
 import { buildImageCard } from "./components/_buildimagecard.js";
+import { generateACRTable } from "./components/acr/_grading.js";
+import { generateCompactHolidays } from "./components/holidays/_calander.js";
+import { generateLeaveDashboard } from "./components/leave/_balance.js";
+import { buildReportingOfficerCards } from "./components/leave/_reporting.js";
+import { buildGenerateLeaveStatus } from "./components/leave/_status.js";
+import { generateSimpleLoanTable } from "./components/loan/_recovery.js";
+import { generateQMS_FilteredSupportView } from "./components/qms/_ticket.js";
 import { buildSalarySlip } from "./components/salary/_payslip.js";
+import { buildSalaryAnnualReport } from "./components/salary/_projected.js";
+import { buildSalaryTaxDeduction } from "./components/salary/_tax.js";
 import { buildServiceBookAddress } from "./components/servicebook/_address.js";
 import { buildServiceBookEducation } from "./components/servicebook/_education.js";
 import { buildServiceBookFamily } from "./components/servicebook/_family.js";
@@ -16,9 +25,9 @@ export const Templates = {
     id: "GetSalaryPayslip",
     format: (res) => buildSalarySlip(res),
   },
-  leaveTemplate: {
-    id: "leaveTemplate",
-    format: (res) => buildDynamicTable(res),
+  LeaveBalanceTemplate: {
+    id: "LeaveBalanceTemplate",
+    format: (res) => generateLeaveDashboard(res),
   },
   profileTemplate: {
     id: "profileTemplate",
@@ -55,5 +64,41 @@ export const Templates = {
   ServiceTrainingTemplate: {
     id: "ServiceTrainingTemplate",
     format: (res) => buildServiceBookTraining(res),
+  },
+  SalaryAnnualReportTemplate: {
+    id: "SalaryAnnualReportTemplate",
+    format: (res) => buildSalaryAnnualReport(res),
+  },
+  SalaryTaxTemplate: {
+    id: "SalaryTaxTemplate",
+    format: (res) => buildSalaryTaxDeduction(res),
+  },
+  LeaveStatusTemplate: {
+    id: "LeaveStatusTemplate",
+    format: (res) => buildGenerateLeaveStatus(res),
+  },
+  LeaveReportingTemplate: {
+    id: "LeaveReportingTemplate",
+    format: (res) => buildReportingOfficerCards(res),
+  },
+  LeaveRequestsOfEmployeesTemplate: {
+    id: "LeaveRequestsOfEmployees",
+    format: (res) => buildDynamicTable(res),
+  },
+  ACR_APR_GradingTemplate: {
+    id: "ACR_APR_GradingTemplate",
+    format: (res) => generateACRTable(res),
+  },
+  Loan_Recovery_Template: {
+    id: "Loan_Recovery_Template",
+    format: (res) => generateSimpleLoanTable(res),
+  },
+  QMS_Template: {
+    id: "QMS_Template",
+    format: (res) => generateQMS_FilteredSupportView(res),
+  },
+  Calander_Template: {
+    id: "Calander_Template",
+    format: (res) => generateCompactHolidays(res),
   },
 };

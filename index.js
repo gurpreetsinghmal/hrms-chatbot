@@ -73,6 +73,8 @@ function hideSystemMessage() {
 
 // --- Text-to-Speech Setup (UPDATED to use Male Voice and Rate 0.8) ---
 function speakMessage(texthtml) {
+  if (localStorage.getItem("mute") == "true") return;
+
   let text = texthtml.replace(/(<([^>]+)>)/gi, "");
   text = text.replace(
     /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|\uD83E[\uDD00-\uDDFF])/g,
@@ -393,13 +395,13 @@ async function simulateBotResponse(userMessage) {
           processTitle = Processes.Leave_Balance.title;
           xendpoint = Endpoints.leave.balance.url;
           reqmethod = Endpoints.leave.balance.method;
-          msgTemplate = Templates.leaveTemplate.id;
+          msgTemplate = Templates.LeaveBalanceTemplate.id;
           break;
         case 2:
-          processTitle = Processes.ACR_Grading.title;
+          processTitle = Processes.ACR_APR_Grading.title;
           xendpoint = Endpoints.acr.grading.url;
           reqmethod = Endpoints.acr.grading.method;
-          msgTemplate = Templates.leaveTemplate.id;
+          msgTemplate = Templates.ACR_APR_GradingTemplate.id;
           break;
         case 3:
           processTitle = Processes.Profile_details.title;
@@ -411,7 +413,7 @@ async function simulateBotResponse(userMessage) {
           processTitle = Processes.Leave_Status.title;
           xendpoint = Endpoints.leave.status.url;
           reqmethod = Endpoints.leave.status.method;
-          msgTemplate = Templates.leaveTemplate.id;
+          msgTemplate = Templates.LeaveStatusTemplate.id;
           break;
         case 5:
           processTitle = Processes.Helpdesk_support.title;
@@ -466,6 +468,54 @@ async function simulateBotResponse(userMessage) {
           xendpoint = Endpoints.servicebook.training.url;
           reqmethod = Endpoints.servicebook.training.method;
           msgTemplate = Templates.ServiceTrainingTemplate.id;
+          break;
+        case 14:
+          processTitle = Processes.Salary_Current_Annual_Report.title;
+          xendpoint = Endpoints.salary.current.url;
+          reqmethod = Endpoints.salary.current.method;
+          msgTemplate = Templates.SalaryAnnualReportTemplate.id;
+          break;
+        case 15:
+          processTitle = Processes.Salary_Projected_Annual_Report.title;
+          xendpoint = Endpoints.salary.projected.url;
+          reqmethod = Endpoints.salary.projected.method;
+          msgTemplate = Templates.SalaryAnnualReportTemplate.id;
+          break;
+        case 16:
+          processTitle = Processes.Salary_Tax_Deduction.title;
+          xendpoint = Endpoints.salary.tax.url;
+          reqmethod = Endpoints.salary.tax.method;
+          msgTemplate = Templates.SalaryTaxTemplate.id;
+          break;
+        case 17:
+          processTitle = Processes.Leave_Reporting_Officer.title;
+          xendpoint = Endpoints.leave.reporting.url;
+          reqmethod = Endpoints.leave.reporting.method;
+          msgTemplate = Templates.LeaveReportingTemplate.id;
+          break;
+        case 18:
+          processTitle = Processes.Leave_Employees_Requests.title;
+          xendpoint = Endpoints.leave.requests.url;
+          reqmethod = Endpoints.leave.requests.method;
+          msgTemplate = Templates.LeaveRequestsOfEmployeesTemplate.id;
+          break;
+        case 19:
+          processTitle = Processes.Loan_Recovery.title;
+          xendpoint = Endpoints.loan.recovery.url;
+          reqmethod = Endpoints.loan.recovery.method;
+          msgTemplate = Templates.Loan_Recovery_Template.id;
+          break;
+        case 20:
+          processTitle = Processes.QMS_Filtered.title;
+          xendpoint = Endpoints.qms.ticket.url;
+          reqmethod = Endpoints.qms.ticket.method;
+          msgTemplate = Templates.QMS_Template.id;
+          break;
+        case 21:
+          processTitle = Processes.Calander_Holidays.title;
+          xendpoint = Endpoints.calander.holidays.url;
+          reqmethod = Endpoints.calander.holidays.method;
+          msgTemplate = Templates.Calander_Template.id;
           break;
         default:
       }
@@ -693,7 +743,15 @@ async function makeDBcall(processResponse) {
       renderMessages();
     })
     .catch((e) => {
-      console.error("DB Exception=>", e);
+      console.error("DB Exception=>");
+      let formattedHtml = `
+        <div style="border-left: 5px solid #d9534f; background: #f121; padding: 12px 20px;color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+  <span style="color: #d9534f; font-weight: bold;">Request Failed : Our services are currently undergoing essential maintenance to serve you better.  </span></div>
+        `;
+      hideTypingIndicator();
+      // Output the bot's response (final DB success reposnses)
+      chatStorage.addMessage("bot", formattedHtml);
+      renderMessages();
       throw e;
     });
 }

@@ -17,27 +17,27 @@ export const Processes = {
   Leave_Balance: {
     title: "Leave_Balance",
     description:
-      "Leave_Balance is a count of different leave left and belongs to an employee. example: CL(casual leave), EL(earned leaves), medical leaves, half leaves",
+      "Leave_Balance is a count of different leave left and belongs to an employee. example: CL(casual leave), EL(earned leaves), medical leaves, half leaves,Special leaves,maternity leave",
     questions: [
       "Please confirm if you are asking for your Leave Balance? YES or NO",
-      "Please tell me your Employee Code?",
+      "Please specify Leave Type? Enter 0 for Regular and 1 for Special Leaves",
     ],
     params: {
       confirmation: null,
-      Employee_Code: null,
+      type: null,
     },
   },
-  ACR_Grading: {
-    title: "ACR_Grading",
+  ACR_APR_Grading: {
+    title: "ACR_APR_Grading",
     description:
-      "ACR Annual Confidential Report. It is a confidential performance appraisal report prepared annually to assess an employee’s performance, conduct, and potential over a given period",
+      "It also includes ACR Grading. ACR (Annual Confidential Report)—now often referred to as APAR (Annual Performance Appraisal Report)—is a critical document used to evaluate the performance, conduct, and integrity of employees for the financial year",
     questions: [
-      "Please confirm if you are asking for your ACR Grading? YES or NO",
-      "Please tell me your Employee Code?",
+      "Please confirm if you are looking for ACR Details? YES or NO",
+      "Please specify Request Type? Enter 1 for Pending ACR,2 for ACR Status and 3 for ACR Grading",
     ],
     params: {
       confirmation: null,
-      Employee_Code: null,
+      type: null,
     },
   },
   Profile_details: {
@@ -54,14 +54,11 @@ export const Processes = {
   Leave_Status: {
     title: "Leave_Status",
     description:
-      "Leave Application Status gives status of applied leaves like pending,approved or rejected",
-    questions: [
-      "Please confirm if you are asking for your Leave Application Status? YES or NO",
-      "Please tell me your Application ID?",
-    ],
+      "Leave_Status gives status of different leave applied,rejected or pending",
+    questions: ["Please confirm if you want Leave Status? YES or NO"],
     params: {
       confirmation: null,
-      appid: null,
+      Year: "0",
     },
   },
   Helpdesk_support: {
@@ -88,7 +85,7 @@ export const Processes = {
     description:
       "Service Book Education provides information about education details like institution,year,percentage of marks and course name",
     questions: [
-      "Please confirm if you as asking about Education Details? YES or NO",
+      "Please confirm if you are asking about Education Details? YES or NO",
     ],
     params: {
       confirmation: null,
@@ -98,9 +95,7 @@ export const Processes = {
     title: "Service_Book_Family",
     description:
       "Family details of service book provides information about family relations like father,mother,children,wife,spouse",
-    questions: [
-      "Please confirm if you as asking about Family Details? YES or NO",
-    ],
+    questions: ["Please confirm if you need about Family Details? YES or NO"],
     params: {
       confirmation: null,
     },
@@ -110,7 +105,7 @@ export const Processes = {
     description:
       "Joining details of service book provides information date of inital joining, mode of recruitment, GPF or CPF Employee etc",
     questions: [
-      "Please confirm if you as asking about Joining Details? YES or NO",
+      "Please confirm if you are asking about Joining Details? YES or NO",
     ],
     params: {
       confirmation: null,
@@ -132,7 +127,7 @@ export const Processes = {
     description:
       "Personal details of service book provides information Contains core identity like Name, DOB, Blood Group,caste",
     questions: [
-      "Please confirm if you as asking about Personal Details? YES or NO",
+      "Please confirm if you looking for Personal Details? YES or NO",
     ],
     params: {
       confirmation: null,
@@ -143,7 +138,7 @@ export const Processes = {
     description:
       "Servide History details of service book provides information all previous postings, transfers, promotions, and designations from the date of joining until now",
     questions: [
-      "Please confirm if you as asking about History Details? YES or NO",
+      "Please confirm if you are asking about History Details? YES or NO",
     ],
     params: {
       confirmation: null,
@@ -152,7 +147,7 @@ export const Processes = {
   Service_Book_Training: {
     title: "Service_Book_Training",
     description:
-      "ists all professional workshops, induction programs, and specialized training courses the employee has completed during their service",
+      "Lists all professional workshops, induction programs, and specialized training courses the employee has completed during their service",
     questions: [
       "Please confirm if you as asking about Training Details? YES or NO",
     ],
@@ -160,4 +155,106 @@ export const Processes = {
       confirmation: null,
     },
   },
+  Salary_Current_Annual_Report: {
+    title: "Salary_Current_Annual_Report",
+    description:
+      "a report that summarizes an employee's total earnings and deductions for a full current financial or calendar year",
+    questions: [
+      "Please confirm if you are looking for Annual Statement? YES or NO",
+      "Please specify the year as number? example 2025",
+    ],
+    params: {
+      confirmation: null,
+      fin_year: null,
+      type: 1,
+    },
+  },
+  Salary_Projected_Annual_Report: {
+    title: "Salary_Projected_Annual_Report",
+    description:
+      "It tells about Estimated yearly salary  for the remaining months,projected salary,projected taxes and Forecasted tax",
+    questions: [
+      "Please confirm if you are asking about Projected Statement? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+      type: 2,
+      fin_year: "autofill",
+    },
+  },
+  Salary_Tax_Deduction: {
+    title: "Salary_Tax_Deduction",
+    description:
+      "a detailed breakdown report that tell different types of tax deducated in current financial or calendar year",
+    questions: [
+      "Please confirm if you are looking for TDS Statement? YES or NO",
+      "Please specify the year as number? example 2025",
+    ],
+    params: {
+      confirmation: null,
+      fin_year: null,
+    },
+  },
+  Leave_Reporting_Officer: {
+    title: "Leave_Reporting_Officer",
+    description:
+      "the Leave Reporting Officer is the immediate authority responsible for reviewing, verifying, and recommending or approving an employee's leave request.",
+    questions: [
+      "Please confirm if you need Reporting Officer Details? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  Leave_Employees_Requests: {
+    title: "Leave_Employees_Requests",
+    description:
+      "It is list of pending leave request in your account.As a Reporting Officer many employees apply for leave to you for reviewing, verifying, and recommending or approving an employee's leave request.",
+    questions: [
+      "Please confirm if you are looking for Employees Leave Request for your perusal ? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  Loan_Recovery: {
+    title: "Loan_Recovery",
+    description:
+      "It is list of Loans or Recoveries for which employess deducts from salary",
+    questions: [
+      "Please confirm if you are looking for Loan Details ? YES or NO",
+    ],
+    params: {
+      confirmation: null,
+    },
+  },
+  QMS_Filtered: {
+    title: "QMS_Filtered",
+    description:
+      "Service gives you status of your ticket raised in query management sytem of hmrs",
+    questions: [
+      "Please confirm if you are looking for Ticket Status ? YES or NO",
+      "Please enter Ticket ID or Reference Number",
+    ],
+    params: {
+      confirmation: null,
+      ticketno: null,
+      officeid: "19733",
+      deptid: "PBD0009",
+    },
+  },
+  Calander_Holidays: {
+    title: "Calander_Holidays",
+    description:
+      "A Calendar Holidays system is a structured data collection used to track and visualize official non-working days (Gazetted, Restricted, or Half-day) to manage",
+    questions: [
+      "Please confirm if you are looking for Calender Holidays ? YES or NO",
+      "Please specify the year as number? example 2025",
+    ],
+    params: {
+      confirmation: null,
+      year: null,
+    },
+  },
 };
+//generateQMS_FilteredSupportView

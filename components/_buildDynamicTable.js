@@ -1,6 +1,7 @@
 //make dynamic table using rows / columns keys
 
-export function buildDynamicTable(data) {
+export function buildDynamicTable(xdata) {
+  let data = xdata[0].balanceLeaveList_regular;
   // No data? Show message
   if (!Array.isArray(data) || data.length === 0) {
     return "<p>No data available</p>";
