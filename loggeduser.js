@@ -33,9 +33,4 @@ export async function checkUserEncrptedAndFetch() {
   }
 }
 
-await checkUserEncrptedAndFetch();
-
-
-
-
-
+checkUserEncrptedAndFetch();

@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HRMS AI Chatbot Showcase - SEWAK SINGH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500&family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      /* 1. THE SETUP & RESET */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        transition: background-color 0.5s ease;
+      }
+
+      /* 2. CORE SLIDE CONTAINER - REFINED SLATE THEME */
+      .slide-container {
+        width: 95vw;
+        max-width: 1200px;
+        aspect-ratio: 16 / 9;
+        /* Lightened Gradient: Slate 900 to Slate 800 */
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+        display: none;
+        flex-direction: column;
+        padding: 40px 60px;
+        color: white;
+      }
+
+      .slide-container.active {
+        display: flex;
+        animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.99) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      /* 3. INTRO SLIDE ANIMATIONS */
+      #slide0 {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background: radial-gradient(
+          circle at top right,
+          #1e3a8a 0%,
+          #0f172a 100%
+        );
+      }
+
+      .animated-logo-wrapper {
+        position: relative;
+        width: 220px;
+        height: 220px;
+        margin-bottom: 30px;
+      }
+
+      .logo-glow {
+        position: absolute;
+        inset: -15px;
+        background: #60a5fa;
+        border-radius: 50%;
+        filter: blur(30px);
+        opacity: 0.3;
+        animation: pulseGlow 2s infinite alternate;
+      }
+
+      .speaking-logo {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+        border-radius: 50%;
+        border: 4px solid #60a5fa;
+        object-fit: contain;
+        z-index: 2;
+        box-shadow: 0 0 40px rgba(96, 165, 250, 0.3);
+      }
+
+      .mouth-wave {
+        position: absolute;
+        bottom: 45px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        z-index: 3;
+      }
+
+      .wave-bar {
+        width: 4px;
+        background: #60a5fa;
+        border-radius: 2px;
+        animation: waveHeight 0.5s infinite ease-in-out;
+        box-shadow: 0 0 8px #60a5fa;
+      }
+
+      @keyframes waveHeight {
+        0%,
+        100% {
+          height: 4px;
+        }
+        50% {
+          height: 20px;
+        }
+      }
+
+      @keyframes pulseGlow {
+        from {
+          transform: scale(1);
+          opacity: 0.2;
+        }
+        to {
+          transform: scale(1.1);
+          opacity: 0.5;
+        }
+      }
+
+      .future-text {
+        font-family: "Orbitron", sans-serif;
+        font-size: 48px;
+        letter-spacing: 4px;
+        margin-bottom: 10px;
+        background: linear-gradient(to bottom, #fff, #93c5fd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .welcome-msg {
+        font-size: 20px;
+        color: #94a3b8;
+        margin-bottom: 40px;
+        letter-spacing: 2px;
+      }
+
+      .begin-btn {
+        padding: 18px 48px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 16px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .begin-btn:hover {
+        background: #3b82f6;
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.5);
+        transform: translateY(-3px);
+      }
+
+      /* 4. CONTENT SLIDE STYLING */
+      .brand-logo-mini {
+        position: absolute;
+        top: 30px;
+        right: 40px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 10;
+      }
+      .brand-logo-mini img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #60a5fa;
+      }
+      .brand-logo-mini span {
+        font-family: "Orbitron", sans-serif;
+        font-size: 12px;
+        color: #93c5fd;
+        letter-spacing: 1px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Poppins", sans-serif;
+        color: #ffffff;
+      }
+      h1 {
+        font-size: 48px;
+        font-weight: 700;
+        color: #60a5fa;
+        font-family: "Orbitron", sans-serif;
+      }
+      .slide-title {
+        font-size: 32px;
+        margin-bottom: 30px;
+        border-left: 5px solid #2563eb;
+        padding-left: 20px;
+        font-family: "Orbitron", sans-serif;
+        letter-spacing: 1px;
+      }
+      p,
+      li {
+        font-size: 18px;
+        line-height: 1.6;
+        color: #cbd5e1;
+      }
+
+      .avatar-main {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        border: 4px solid #2563eb;
+        box-shadow: 0 0 40px rgba(37, 99, 235, 0.3);
+        margin-bottom: 25px;
+        object-fit: cover;
+      }
+
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        width: 100%;
+        align-items: center;
+      }
+      .image-wrapper {
+        width: 100%;
+        height: 340px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .diagram-frame {
+        width: 100%;
+        height: 280px;
+        border: none;
+        filter: contrast(1.1);
+      }
+
+      /* Card styles for pillars */
+      .pillar-card {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 35px 25px;
+        border-radius: 20px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+      .pillar-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-8px);
+        border-color: rgba(96, 165, 250, 0.5);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+      .pillar-card i {
+        font-size: 44px;
+        color: #60a5fa;
+        margin-bottom: 20px;
+      }
+
+      .controls {
+        position: fixed;
+        bottom: 40px;
+        display: none;
+        align-items: center;
+        gap: 15px;
+        z-index: 100;
+      }
+
+      .nav-btn {
+        background-color: #ffffff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 50px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        font-weight: 600;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+      }
+      .nav-btn:hover:not(:disabled) {
+        background: #f1f5f9;
+        transform: scale(1.05);
+      }
+      .nav-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .progress-indicator {
+        background: #1e293b;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        color: #94a3b8;
+        font-size: 14px;
+        border: 1px solid #334155;
+      }
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        width: 100%;
+        align-items: center;
+      }
+      /* Card styles */
+      .card {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+      .card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-5px);
+      }
+      .card h3 {
+        color: #60a5fa;
+        font-family: "Orbitron", sans-serif;
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+      .view-link-btn {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background-color: #1e293b;
+        color: #60a5fa;
+        border: 1px solid #334155;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+      }
+      .view-link-btn:hover {
+        background: #334155;
+        border-color: #60a5fa;
+      }
+      /* Stat Grid */
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        width: 100%;
+      }
+      .stat-card {
+        background: rgba(37, 99, 235, 0.1);
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+      }
+      .stat-val {
+        font-size: 28px;
+        font-family: "Orbitron", sans-serif;
+        color: #60a5fa;
+        font-weight: 700;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* Impact Matrix */
+      .impact-matrix {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 15px;
+        flex-grow: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SLIDE 0: ANIMATED INTRO -->
+    <div class="slide-container active" id="slide0">
+      <div class="animated-logo-wrapper">
+        <div class="logo-glow"></div>
+        <img
+          src="https://punjab.gov.in/wp-content/themes/business-epic/assets/images/punjab-gov.svg"
+          alt="govtlogo"
+          class="speaking-logo"
+        />
+      </div>
+      <h1 class="future-text">WELCOME EVERYONE</h1>
+      <p class="welcome-msg">TO THE NEXT GEN HRMS INTELLIGENCE</p>
+      <button class="begin-btn" onclick="startPresentation()">
+        START EXPERIENCE
+      </button>
+    </div>
+
+    <!-- SLIDE 1: Welcome -->
+    <div class="slide-container" id="slide1">
+      <div class="brand-logo-mini">
+        <img src="assets/sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <div
+        style="
+          text-align: center;
+          height: 100%;
+          justify-content: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        "
+      >
+        <img
+          src="assets/sewak-avatar.png"
+          alt="Sewak Singh"
+          class="avatar-main"
+        />
+        <p
+          style="
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 12px;
+            font-family: 'Orbitron', sans-serif;
+          "
+        >
+          Introducing
+        </p>
+        <h1 style="margin-bottom: 10px">SEWAK SINGH</h1>
+        <h2
+          style="
+            font-weight: 400;
+            color: #94a3b8;
+            margin-bottom: 25px;
+            font-size: 22px;
+          "
+        >
+          Digital HRMS Concierge
+        </h2>
+        <p style="font-size: 20px; color: #cbd5e1; max-width: 75%">
+          A sophisticated AI interface designed to bridge the gap between
+          complex HRMS data and intuitive employee interaction.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Redefining Experience -->
+    <div class="slide-container" id="slide2">
+      <div class="brand-logo-mini">
+        <img src="assets/sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <div
+        style="
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+        "
+      >
+        <div
+          style="
+            width: 60px;
+            height: 4px;
+            background: #60a5fa;
+            border-radius: 2px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px #60a5fa;
+          "
+        ></div>
+        <h2
+          style="
+            font-size: 44px;
+            font-family: 'Orbitron', sans-serif;
+            line-height: 1.2;
+          "
+        >
+          Seamlessly <br />
+          Redefining Experience
+        </h2>
+        <p
+          style="
+            font-size: 22px;
+            color: #94a3b8;
+            margin-top: 20px;
+            max-width: 60%;
+          "
+        >
+          Focusing on empathy, accessibility, and high-speed resolution for the
+          modern workforce.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: The Purpose -->
+    <div class="slide-container" id="slide2">
+      <div class="brand-logo-mini">
+        <img src="assets/sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <h2 class="slide-title">The Purpose</h2>
+      <div class="content-area">
+        <div class="two-column">
+          <div class="card">
+            <h3>Bridging the Gap</h3>
+            <p>
+              SEWAK SINGH acts as a unified interface between complex HRMS
+              databases and the employee. No more navigating through multiple
+              menus—just ask.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Always On</h3>
+            <p>
+              Providing 24/7 support for various service and queries, ensuring
+              HRMS teams can focus on strategic, high-value human interactions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Boundaries -->
+    <div class="slide-container" id="slide3">
+      <div class="brand-logo-mini">
+        <img src="assets/sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <h2 class="slide-title">Operational Boundaries</h2>
+      <div class="content-area">
+        <div class="two-column">
+          <div class="card">
+            <h3>Guardrails & Safety</h3>
+            <ul style="list-style: none; margin-top: 10px">
+              <li style="margin-bottom: 12px">
+                <i
+                  class="fa-solid fa-lock"
+                  style="color: #60a5fa; margin-right: 10px"
+                ></i>
+                Personally Identifiable Information Masking & Data Privacy
+              </li>
+              <li style="margin-bottom: 12px">
+                <i
+                  class="fa-solid fa-ban"
+                  style="color: #60a5fa; margin-right: 10px"
+                ></i>
+                No Medical/Legal Advice
+              </li>
+              <li style="margin-bottom: 12px">
+                <i
+                  class="fa-solid fa-filter"
+                  style="color: #60a5fa; margin-right: 10px"
+                ></i>
+                Only Bounded with HRMS Services
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Escalation Protocols</h3>
+            <p>
+              Sewak Singh identifies high-emotion queries and complex conflicts,
+              automatically escalating them to a human HRMS Helpdesk Team.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Tangible Impact -->
+    <div class="slide-container" id="slide6">
+      <div class="brand-logo-mini">
+        <img src="assets/sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <h2 class="slide-title">Tangible Impact</h2>
+      <div class="content-area">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+          "
+        >
+          <div class="card" style="text-align: center">
+            <div style="font-size: 48px; color: #60a5fa; font-weight: 700">
+              40%
+            </div>
+            <p>Reduction in L1 Tickets</p>
+          </div>
+          <div class="card" style="text-align: center">
+            <div style="font-size: 48px; color: #60a5fa; font-weight: 700">
+              24/7
+            </div>
+            <p>Instant Support Access</p>
+          </div>
+          <div class="card" style="text-align: center">
+            <div style="font-size: 48px; color: #60a5fa; font-weight: 700">
+              100%
+            </div>
+            <p>Privacy & Satisfaction</p>
+          </div>
+        </div>
+        <br />
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+          <div class="card">
+            <h3 style="font-size: 16px">
+              <i
+                class="fa-solid fa-clock-rotate-left"
+                style="margin-right: 10px"
+              ></i>
+              Efficiency Gains
+            </h3>
+            <p style="font-size: 14px">
+              Automating repetitive tasks saves HR professionals approximately
+              15 hours per week, allowing them to focus on employee wellness and
+              retention strategies.
+            </p>
+          </div>
+          <div class="card">
+            <h3 style="font-size: 16px">
+              <i
+                class="fa-solid fa-money-bill-trend-up"
+                style="margin-right: 10px"
+              ></i>
+              Operational Cost
+            </h3>
+            <p style="font-size: 14px">
+              Projected annual savings of $120k+ by reducing the need for
+              expanded manual support desks during peak appraisal and
+              recruitment cycles.
+            </p>
+          </div>
+          <div class="card">
+            <h3 style="font-size: 16px">
+              <i class="fa-solid fa-bullseye" style="margin-right: 10px"></i>
+              Information Accuracy
+            </h3>
+            <p style="font-size: 14px">
+              Eliminated "Human Error" in policy interpretation, ensuring
+              consistent communication across all departments and global office
+              locations.
+            </p>
+          </div>
+          <div class="card">
+            <h3 style="font-size: 16px">
+              <i class="fa-solid fa-chart-line" style="margin-right: 10px"></i>
+              Real-time Analytics
+            </h3>
+            <p style="font-size: 14px">
+              Instant heatmaps of employee concerns allow leadership to
+              proactively address systemic issues before they impact morale.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: core pillars -->
+    <div class="slide-container" id="slide3">
+      <div class="brand-logo-mini">
+        <img src="assets/sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <h2 class="slide-title">Core Service Pillars</h2>
+      <div class="content-area">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+          "
+        >
+          <div class="pillar-card">
+            <i class="fa-solid fa-receipt"></i>
+            <h3
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #60a5fa;
+              "
+            >
+              Payroll
+            </h3>
+            <p style="font-size: 16px">
+              Retrieve payslips and Instant breakdown of pay, allowances, and
+              bonuses.
+            </p>
+          </div>
+          <div class="pillar-card">
+            <i class="fa-solid fa-clock"></i>
+            <h3
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #60a5fa;
+              "
+            >
+              Service Logs
+            </h3>
+            <p style="font-size: 16px">
+              Real-time Check on Employee Service Book Transactions.
+            </p>
+          </div>
+          <div class="pillar-card">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #60a5fa;
+              "
+            >
+              Compliance
+            </h3>
+            <p style="font-size: 16px">
+              Instant clarification on Govt Policies and Laws in CSR Rule Book.
+            </p>
+          </div>
+          <div class="pillar-card">
+            <i class="fa-solid fa-calendar-minus"></i>
+            <h3
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #60a5fa;
+              "
+            >
+              Leave
+            </h3>
+            <p style="font-size: 16px">
+              Check balances for your leaves & Track status in real-time.
+            </p>
+          </div>
+
+          <div class="pillar-card">
+            <i class="fa-solid fa-calculator"></i>
+            <h3
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #60a5fa;
+              "
+            >
+              Tax
+            </h3>
+            <p style="font-size: 16px">
+              AI-powered tax projections based on current investments.
+            </p>
+          </div>
+          <div class="pillar-card">
+            <i class="fa-solid fa-file-invoice"></i>
+            <h3
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #60a5fa;
+              "
+            >
+              ACR
+            </h3>
+            <p style="font-size: 16px">
+              Digitized ACR Automated Transparent tracking of
+              reporting/reviewing officer status.
+            </p>
+          </div>
+          <div class="pillar-card">
+            <i class="fa-solid fa-book-bookmark"></i>
+            <h3
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #60a5fa;
+              "
+            >
+              Service Book
+            </h3>
+            <p style="font-size: 16px">
+              A 360-degree ledger of the employee's career journey. Track
+              promotions, transfers & training history.
+            </p>
+          </div>
+          <div class="pillar-card">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <h3
+              style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 18px;
+                margin-bottom: 12px;
+                color: #60a5fa;
+              "
+            >
+              Complaint Logs
+            </h3>
+            <p style="font-size: 16px">
+              Real-time status tracking alerts to ensure every concern is
+              addressed promptly.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Architecture -->
+    <div class="slide-container" id="slide4">
+      <div class="brand-logo-mini">
+        <img src="assets/sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <h2 class="slide-title">Intelligent Core</h2>
+      <div class="content-area">
+        <div class="two-column">
+          <div>
+            <h3 style="color: #60a5fa; margin-bottom: 20px; font-size: 24px">
+              Scalable Infrastructure
+            </h3>
+            <p>
+              Leveraging a state-of-the-art
+              <strong>RAG (Retrieval-Augmented Generation)</strong> pipeline to
+              ensure data privacy and accuracy.
+            </p>
+            <ul style="list-style: none; margin-top: 25px">
+              <li style="margin-bottom: 18px">
+                <i
+                  class="fa-solid fa-microchip"
+                  style="color: #60a5fa; margin-right: 12px"
+                ></i>
+                Neural Orchestration
+              </li>
+              <li style="margin-bottom: 18px">
+                <i
+                  class="fa-solid fa-bolt"
+                  style="color: #60a5fa; margin-right: 12px"
+                ></i>
+                Low-Latency Reasoning
+              </li>
+              <li style="margin-bottom: 18px">
+                <i
+                  class="fa-solid fa-lock"
+                  style="color: #60a5fa; margin-right: 12px"
+                ></i>
+                Secure Enterprise Integration
+              </li>
+              <li style="margin-bottom: 18px">
+                <i
+                  class="fa-solid fa-shield-halved"
+                  style="color: #60a5fa; margin-right: 12px"
+                ></i>
+                Zero-Hallucination: Responses are anchored in verified source
+                material.
+              </li>
+            </ul>
+          </div>
+          <div class="image-wrapper">
+            <img class="diagram-frame" src="assets/Multimodel chatbot.png" />
+            <a
+              href="https://www.dezyn.io/shared/6f5ee9bf-2a14-4156-8ef7-8f789e88ff98"
+              target="_blank"
+              class="view-link-btn"
+            >
+              <i class="fa-solid fa-expand"></i> Inspect Architecture
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Inclusive Interaction (for abled) -->
+    <div class="slide-container" id="slide5">
+      <div class="brand-logo-mini">
+        <img src="sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <h2 class="slide-title">Inclusive Interaction</h2>
+      <div class="content-area">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+          "
+        >
+          <div class="card">
+            <h3>
+              <i class="fa-solid fa-ear-listen" style="margin-right: 10px"></i>
+              Hearing Support
+            </h3>
+            <p>
+              Real-time visual transcriptions and text-based feedback ensure
+              that those with hearing impairments can interact seamlessly
+              without missing a single detail.
+            </p>
+          </div>
+          <div class="card">
+            <h3>
+              <i
+                class="fa-solid fa-eye-low-vision"
+                style="margin-right: 10px"
+              ></i>
+              Visual Assistance
+            </h3>
+            <p>
+              Screen-reader optimized interface and voice-command navigation
+              allow employees with visual impairments to navigate HRMS data
+              effortlessly.
+            </p>
+          </div>
+          <div class="card" style="grid-column: span 1">
+            <h3>
+              <i
+                class="fa-solid fa-universal-access"
+                style="margin-right: 10px"
+              ></i>
+              Multi-Modal Accessibility
+            </h3>
+            <p>
+              By offering choice between voice, text, and visual cues, SEWAK
+              SINGH ensures that every employee, regardless of physical ability,
+              has equitable access to HRMS services.
+            </p>
+          </div>
+          <div class="card" style="grid-column: span 1">
+            <h3>
+              <i
+                class="fa-solid fa-universal-access"
+                style="margin-right: 10px"
+              ></i>
+              Dynamic Template Designs
+            </h3>
+            <p>
+              By offering dynamic designs on the basis of reports and its data
+              ,SEWAK SINGH ensures that every employee has interactive access to
+              HRMS services.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Letgo for demo -->
+    <div class="slide-container" id="slide5">
+      <div class="brand-logo-mini">
+        <img src="assets/sewak-avatar.png" /><span>SEWAK SINGH</span>
+      </div>
+      <div
+        style="
+          text-align: center;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <img
+          src="assets/sewak-avatar.png"
+          alt="Sewak Singh"
+          style="
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 3px solid #60a5fa;
+            box-shadow: 0 0 40px rgba(96, 165, 250, 0.2);
+          "
+        />
+        <h2
+          style="
+            font-size: 56px;
+            font-family: 'Orbitron', sans-serif;
+            color: #60a5fa;
+            margin-bottom: 10px;
+          "
+        >
+          Let's
+        </h2>
+        <p
+          style="
+            font-size: 20px;
+            color: #94a3b8;
+            letter-spacing: 3px;
+            font-weight: 500;
+          "
+        >
+          TRANSFORM HRMS TOGETHER
+        </p>
+        <a href="/" target="_blank" class="view-link-btn">
+          VIEW
+          <i class="fa-solid fa-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls" id="controls">
+      <button class="nav-btn" id="prevBtn" disabled>
+        <i class="fa-solid fa-arrow-left"></i> Previous
+      </button>
+      <div class="progress-indicator" id="progress">1 / 5</div>
+      <button class="nav-btn" id="nextBtn">
+        Next <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <script>
+      const slides = document.querySelectorAll(".slide-container");
+      const controls = document.getElementById("controls");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const progress = document.getElementById("progress");
+      let currentSlide = 0;
+
+      function startPresentation() {
+        currentSlide = 1;
+        updateSlides();
+        controls.style.display = "flex";
+        document.body.style.backgroundColor = "#f1f5f9";
+      }
+
+      function updateSlides() {
+        slides.forEach((slide, index) => {
+          slide.classList.remove("active");
+          if (index === currentSlide) {
+            slide.classList.add("active");
+          }
+        });
+
+        if (currentSlide > 0) {
+          prevBtn.disabled = currentSlide === 1;
+          nextBtn.disabled = currentSlide === slides.length - 1;
+          progress.innerText = `${currentSlide} / ${slides.length - 1}`;
+        }
+      }
+
+      prevBtn.addEventListener("click", () => {
+        if (currentSlide > 1) {
+          currentSlide--;
+          updateSlides();
+        }
+      });
+
+      nextBtn.addEventListener("click", () => {
+        if (currentSlide < slides.length - 1) {
+          currentSlide++;
+          updateSlides();
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (currentSlide === 0) return;
+        if (e.key === "ArrowRight" || e.key === " ") {
+          if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            updateSlides();
+          }
+        } else if (e.key === "ArrowLeft") {
+          if (currentSlide > 1) {
+            currentSlide--;
+            updateSlides();
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
