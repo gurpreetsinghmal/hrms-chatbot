@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ultimate Vector Similarity Lab</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/universal-sentence-encoder@1.3.3/dist/universal-sentence-encoder.min.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/"
+        }
+      }
+    </script>
+
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #0a0f24;
+        color: #fff;
+      }
+
+      #uiLayer {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 320px;
+        background: rgba(16, 22, 48, 0.9);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 100;
+      }
+
+      h2 {
+        margin: 0 0 15px 0;
+        font-size: 20px;
+        color: #4fc3f7;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        background: #1a223f;
+        border: 1px solid #34495e;
+        color: white;
+        border-radius: 4px;
+        margin-bottom: 8px;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #4fc3f7;
+        border: none;
+        color: #0a0f24;
+        font-weight: bold;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      button:hover {
+        background: #81d4fa;
+      }
+      button:disabled {
+        background: #444;
+        cursor: not-allowed;
+      }
+
+      #scores {
+        margin-top: 20px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      .scoreBox {
+        padding: 8px;
+        margin-bottom: 5px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .highlight {
+        border-left: 4px solid #34eb77;
+        background: rgba(52, 235, 119, 0.1);
+      }
+      .status {
+        font-size: 12px;
+        color: #aaa;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="uiLayer">
+      <h2>Vector Semantic Search</h2>
+      <div id="status" class="status">Loading AI Model...</div>
+
+      <div class="input-group">
+        <input
+          id="queryInput"
+          value="I love exploring the universe"
+          placeholder="Enter query sentence..."
+        />
+        <button id="btnRun" disabled>Search Vector Space</button>
+      </div>
+
+      <div id="scores"></div>
+    </div>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+      // --- Configuration ---
+      const DOC_COUNT = 40;
+      let model = null;
+      const docData = [
+        "The stars are bright tonight",
+        "Deep learning is a subset of AI",
+        "I enjoy cooking Italian pasta",
+        "Quantum physics is very complex",
+        "The quick brown fox jumps over the dog",
+        "Neural networks simulate the brain",
+        "Space exploration is the future",
+        "A healthy diet includes vegetables",
+        "The stock market is volatile today",
+        "Exploring galaxies far away",
+      ];
+
+      // --- Three.js Engine ---
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a0f24);
+
+      const camera = new THREE.PerspectiveCamera(
+        60,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.set(15, 15, 25);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      scene.add(new THREE.AmbientLight(0x404040));
+
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(10, 20, 10);
+      scene.add(light);
+
+      // Helper Grid
+      const grid = new THREE.GridHelper(40, 40, 0x333333, 0x222222);
+      scene.add(grid);
+
+      const arrowsGroup = new THREE.Group();
+      scene.add(arrowsGroup);
+
+      let queryArrow = null;
+
+      // --- Core Functions ---
+
+      function cosineSimilarity(a, b) {
+        let dot = 0,
+          magA = 0,
+          magB = 0;
+        for (let i = 0; i < a.length; i++) {
+          dot += a[i] * b[i];
+          magA += a[i] * a[i];
+          magB += b[i] * b[i];
+        }
+        return dot / (Math.sqrt(magA) * Math.sqrt(magB));
+      }
+
+      async function initModel() {
+        model = await use.load();
+        document.getElementById("status").innerText = "Model Ready ✔";
+        document.getElementById("btnRun").disabled = false;
+      }
+
+      function createVectorArrows(embeddings, sentences) {
+        arrowsGroup.clear();
+        const results = [];
+
+        embeddings.forEach((emb, i) => {
+          // Map high-dim to 3D space (using first 3 dims for visualization)
+          const v = new THREE.Vector3(emb[0] * 20, emb[1] * 20, emb[2] * 20);
+
+          const arrow = new THREE.ArrowHelper(
+            v.clone().normalize(),
+            new THREE.Vector3(0, 0, 0),
+            v.length() * 10,
+            0x8395a7,
+            0.5,
+            0.2
+          );
+
+          arrow.userData = { sentence: sentences[i], vector: emb };
+          arrowsGroup.add(arrow);
+        });
+      }
+
+      async function runSearch() {
+        const queryText = document.getElementById("queryInput").value;
+        const status = document.getElementById("status");
+        status.innerText = "Embedding & Searching...";
+
+        // 1. Get Embeddings
+        const allSentences = [...docData, queryText];
+        const embeddingsTensor = await model.embed(allSentences);
+        const embeddings = await embeddingsTensor.array();
+
+        const queryEmb = embeddings.pop(); // Last one is our query
+        const docEmbs = embeddings;
+
+        // 2. Visualization - Update Query Arrow
+        if (queryArrow) scene.remove(queryArrow);
+        const qV = new THREE.Vector3(
+          queryEmb[0] * 20,
+          queryEmb[1] * 20,
+          queryEmb[2] * 20
+        );
+        queryArrow = new THREE.ArrowHelper(
+          qV.clone().normalize(),
+          new THREE.Vector3(0, 0, 0),
+          8,
+          0xff4757,
+          0.8,
+          0.4
+        );
+        scene.add(queryArrow);
+
+        // 3. Compare and Rank
+        const scoredResults = docData
+          .map((text, i) => ({
+            text,
+            score: cosineSimilarity(queryEmb, docEmbs[i]),
+            index: i,
+          }))
+          .sort((a, b) => b.score - a.score);
+
+        // 4. Update UI & Scene Colors
+        const scoresDiv = document.getElementById("scores");
+        scoresDiv.innerHTML = "";
+
+        createVectorArrows(docEmbs, docData);
+
+        arrowsGroup.children.forEach((arrow, i) => {
+          const score = cosineSimilarity(queryEmb, docEmbs[i]);
+          // Color mapping: Green for high similarity, Blue for low
+          const color = new THREE.Color().setHSL((score + 1) / 2.5, 1, 0.5);
+          arrow.setColor(color);
+
+          // Scale arrow length based on similarity
+          arrow.setLength(2 + score * 10);
+        });
+
+        scoredResults.forEach((res, i) => {
+          const isTop = i === 0;
+          scoresDiv.innerHTML += `
+                    <div class="scoreBox ${isTop ? "highlight" : ""}">
+                        <span>${res.text.substring(0, 25)}...</span>
+                        <span style="color: #4fc3f7">${res.score.toFixed(
+                          3
+                        )}</span>
+                    </div>`;
+        });
+
+        status.innerText = "Match Found!";
+      }
+
+      // --- Initialization & Loops ---
+      initModel();
+
+      document.getElementById("btnRun").onclick = runSearch;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        // Subtle rotation for flair
+        arrowsGroup.rotation.y += 0.001;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
+</html>
