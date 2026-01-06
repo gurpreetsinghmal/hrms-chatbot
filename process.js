@@ -40,15 +40,17 @@ export const Processes = {
       type: null,
     },
   },
-  Profile_details: {
-    title: "Profile_details",
+  Calander_Holidays: {
+    title: "Calander_Holidays",
     description:
-      "Profile Details gives you complete details of current logged in employee like name, designation,office,grade pay",
+      "A Calendar Holidays system is a structured data collection used to track and visualize official non-working days (Gazetted, Restricted, or Half-day) to manage",
     questions: [
-      "Please confirm if you are asking for your Profile Details? YES or NO",
+      "Please confirm if you are looking for Calender Holidays ? YES or NO",
+      "Please specify the year as number? example 2025",
     ],
     params: {
       confirmation: null,
+      year: null,
     },
   },
   Leave_Status: {
@@ -241,19 +243,6 @@ export const Processes = {
       ticketno: null,
       officeid: "19733",
       deptid: "PBD0009",
-    },
-  },
-  Calander_Holidays: {
-    title: "Calander_Holidays",
-    description:
-      "A Calendar Holidays system is a structured data collection used to track and visualize official non-working days (Gazetted, Restricted, or Half-day) to manage",
-    questions: [
-      "Please confirm if you are looking for Calender Holidays ? YES or NO",
-      "Please specify the year as number? example 2025",
-    ],
-    params: {
-      confirmation: null,
-      year: null,
     },
   },
 };

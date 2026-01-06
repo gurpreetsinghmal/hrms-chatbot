@@ -372,7 +372,6 @@ async function simulateBotResponse(userMessage) {
   // STEP 3: Handle API Response (Start Flow or Generic Response)
   // ----------------------------------------------------------------------
   try {
-    botResponse = botResponse.trim();
     const processCount = Object.keys(Processes).length;
     // check whether return a process number
     if (!isNaN(Number(botResponse)) && Number.isInteger(Number(botResponse))) {
@@ -404,10 +403,10 @@ async function simulateBotResponse(userMessage) {
           msgTemplate = Templates.ACR_APR_GradingTemplate.id;
           break;
         case 3:
-          processTitle = Processes.Profile_details.title;
-          xendpoint = Endpoints.profile.details.url;
-          reqmethod = Endpoints.profile.details.method;
-          msgTemplate = Templates.profileTemplate.id;
+          processTitle = Processes.Calander_Holidays.title;
+          xendpoint = Endpoints.calander.holidays.url;
+          reqmethod = Endpoints.calander.holidays.method;
+          msgTemplate = Templates.Calander_Template.id;
           break;
         case 4:
           processTitle = Processes.Leave_Status.title;
@@ -511,12 +510,7 @@ async function simulateBotResponse(userMessage) {
           reqmethod = Endpoints.qms.ticket.method;
           msgTemplate = Templates.QMS_Template.id;
           break;
-        case 21:
-          processTitle = Processes.Calander_Holidays.title;
-          xendpoint = Endpoints.calander.holidays.url;
-          reqmethod = Endpoints.calander.holidays.method;
-          msgTemplate = Templates.Calander_Template.id;
-          break;
+
         default:
       }
 
@@ -544,7 +538,32 @@ async function simulateBotResponse(userMessage) {
     // STEP 4: Output Final Response (Generic or First Question)
     // ----------------------------------------------------------------------
 
-    console.log("dummyBotResponse", dummyBotResponse);
+    botResponse = botResponse.trim();
+    if (botResponse == "rule") {
+      debugger;
+      localStorage.setItem("rule", "rule");
+      console.log("rule asked for => ", userMessage);
+
+      //----rule API
+      showTypingIndicator()
+      await botService
+        .doApiCall(userMessage)
+        .then((s) => {
+          botResponse = normalizeBotHtml(s);
+        })
+        .catch((e) => {
+          console.log(e);
+          botResponse = "Something went wrong,Try after few seconds";
+        })
+        .finally(() => {
+          // Hides the indicator before adding the message
+          hideTypingIndicator();
+          localStorage.removeItem("rule");
+        });
+
+      //---rule API Ends
+    }
+
     chatStorage.addMessage("bot", botResponse);
     renderMessages();
     speakMessage(botResponse);
@@ -563,49 +582,75 @@ async function simulateBotResponse(userMessage) {
 function normalizeBotHtml(html) {
   if (!html) return html;
 
-  /* 1) Extract <img> inside <p> tags */
-  html = html.replace(/<p[^>]*>\s*<img[^>]*>\s*<\/p>/gi, (block) => {
-    const match = block.match(/<img[^>]*src=["']([^"']+)["']/i);
-    return match ? `<img src="${match[1]}" alt="image" class="bot-image">` : "";
-  });
+  // /* 1) Extract <img> inside <p> tags */
+  // html = html.replace(/<p[^>]*>\s*<img[^>]*>\s*<\/p>/gi, (block) => {
+  //   const match = block.match(/<img[^>]*src=["']([^"']+)["']/i);
+  //   return match ? `<img src="${match[1]}" alt="image" class="bot-image">` : "";
+  // });
 
-  /* 2) Normalize all <img> tags */
-  html = html.replace(
-    /<img[^>]*src=["']([^"']+)["'][^>]*>/gi,
-    (_, src) => `<img src="${src}" alt="image" class="bot-image">`
-  );
+  // /* 2) Normalize all <img> tags */
+  // html = html.replace(
+  //   /<img[^>]*src=["']([^"']+)["'][^>]*>/gi,
+  //   (_, src) => `<img src="${src}" alt="image" class="bot-image">`
+  // );
 
-  /* 3) Convert raw image URLs */
-  html = html.replace(
-    /(^|\s)(https?:\/\/[^\s'"]+\.(jpg|jpeg|png|gif|webp))(?=$|\s)/gi,
-    (_, space, url) =>
-      `${space}<img src="${url}" alt="image" class="bot-image">`
-  );
+  // /* 3) Convert raw image URLs */
+  // html = html.replace(
+  //   /(^|\s)(https?:\/\/[^\s'"]+\.(jpg|jpeg|png|gif|webp))(?=$|\s)/gi,
+  //   (_, space, url) =>
+  //     `${space}<img src="${url}" alt="image" class="bot-image">`
+  // );
 
-  /* 4) FIX <a> TAGS WITHOUT href */
-  html = html.replace(/<a\b([^>]*)>(.*?)<\/a>/gi, (full, attrs, text) => {
-    // already has href → keep it
-    if (/href\s*=/i.test(attrs)) return full;
+  // /* 4) FIX <a> TAGS WITHOUT href */
+  // html = html.replace(/<a\b([^>]*)>(.*?)<\/a>/gi, (full, attrs, text) => {
+  //   // already has href → keep it
+  //   if (/href\s*=/i.test(attrs)) return full;
 
-    const urlMatch = text.match(/https?:\/\/[^\s<]+|www\.[^\s<]+/i);
-    if (!urlMatch) return full;
+  //   const urlMatch = text.match(/https?:\/\/[^\s<]+|www\.[^\s<]+/i);
+  //   if (!urlMatch) return full;
 
-    let url = urlMatch[0];
-    if (!/^https?:\/\//i.test(url)) {
-      url = "https://" + url;
-    }
+  //   let url = urlMatch[0];
+  //   if (!/^https?:\/\//i.test(url)) {
+  //     url = "https://" + url;
+  //   }
 
-    return `<a href="${url}" target="_blank" class="bot-link-btn">View / Download</a>`;
-  });
+  //   return `<a href="${url}" target="_blank" class="bot-link-btn">View / Download</a>`;
+  // });
 
-  /* 5) Convert raw non-image URLs to link buttons */
-  html = html.replace(
-    /(^|\s)(https?:\/\/(?![^\s'"]+\.(jpg|jpeg|png|gif|webp))[^\s'"]+)(?=$|\s)/gi,
-    (_, space, url) =>
-      `${space}<a href="${url}" target="_blank" class="bot-link-btn">View / Download</a>`
-  );
+  // /* 5) Convert raw non-image URLs to link buttons */
+  // html = html.replace(
+  //   /(^|\s)(https?:\/\/(?![^\s'"]+\.(jpg|jpeg|png|gif|webp))[^\s'"]+)(?=$|\s)/gi,
+  //   (_, space, url) =>
+  //     `${space}<a href="${url}" target="_blank" class="bot-link-btn">View / Download</a>`
+  // );
+
+  if (localStorage.getItem("rule") == "rule") {
+    html = formatIhrmsResponse(html);
+  }
 
   return html;
+}
+function formatIhrmsResponse(text) {
+  if (!text) return "";
+
+  let formatted = text
+    // 1. Convert Bold (**text**) to <strong>
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+
+    // 2. Convert Links ([text](url)) to <a href="url" target="_blank">
+    .replace(
+      /\[(.*?)\]\((.*?)\)/g,
+      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+    )
+
+    // 3. Convert Bullet points (-) into line breaks or list items
+    // This regex looks for a dash at the start of a line
+    .replace(/^- /gm, "<br>• ")
+
+    // 4. Handle italicized notes *(text)*
+    .replace(/\*(.*?)\*/g, "<em>$1</em>");
+
+  return formatted;
 }
 
 function sendMessage(text) {

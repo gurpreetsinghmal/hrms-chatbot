@@ -9,27 +9,7 @@ export class BotService {
       "Content-Type": "application/json",
     };
 
-    let user = {
-      id: 1,
-      firstName: "Emily",
-      lastName: "Johnson",
-      maidenName: "Smith",
-      age: "29 years",
-      gender: "female",
-      email: "emily.johnson@x.dummyjson.com",
-      phone: "+81 965-431-3024",
-      username: "emilys",
-      password: "emilyspass",
-      birthDate: "30-05-1989",
-      image:
-        "https://www.gavinpublishers.com/admin/assets/editors_image/1508827486updated_picture1389863627.jpg",
-      bloodGroup: "O-",
-      height: "193.24",
-      weight: "63.16",
-      eyeColor: "Green",
-      nicknames: ["john", "dave", "nick"],
-    };
-    let bodyContent = JSON.stringify(PromptTemplates(userMessage, user));
+    let bodyContent = JSON.stringify(PromptTemplates(userMessage));
 
     // console.log("Request Body:", bodyContent);
 

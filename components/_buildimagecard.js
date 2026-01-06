@@ -1,11 +1,20 @@
-export function buildImageCard(data) {
+export function buildImageCard(type, base64) {
   let img;
-  if (data.type.toLowerCase() == "image") {
-    img = `<img src="${data.imgurl}" style="width:100%;border-radius:10px"/>`;
+  let html = "";
+  if (type != "unknown") {
+    img = `
+    <div style="display:flex;justify-content: center;">
+    <img src="data:${type};base64,${base64}" alt="Profile Image"  style="width:200px;border:1px solid;border-radius:10px"/>
+    </div>
+    `;
+    html = `${img}`;
+  } else {
+    img = `
+    <div style="display:flex;justify-content: center;">
+    <img src="/assets/noimage.jpg" alt="No Image Placeholder" style="width:200px;border:1px solid;border-radius:10px"/>
+    </div>`;
+    html = `${img}`;
   }
-
-  let html = `<b>Profile Image</b><br/>${img}`;
-
   return html;
 }
 

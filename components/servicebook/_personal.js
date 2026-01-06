@@ -1,3 +1,5 @@
+import { buildImageCard } from "../_buildimagecard.js";
+
 export function buildServiceBookPersonal(data) {
   let a = data[0].PersonalDetail;
 
@@ -17,8 +19,8 @@ export function buildServiceBookPersonal(data) {
     { Title: "Home State", Infomation: a.HomeState },
     { Title: "LTC Home Town", Infomation: a.LTCHomeTown },
   ];
-
   let html = `
+  ${buildImageCard(a.Imgtype, a.Imgbase64)}
   ${buildSubtable("Personal Details", t1_present)}
   `;
   return html;
