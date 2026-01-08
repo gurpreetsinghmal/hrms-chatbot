@@ -6,23 +6,28 @@ function diagnoseQuery(query) {
   const text = query.toLowerCase().trim();
 
   const patterns = {
-    // (s)? matches "rule" and "rules"
-    // (y|ies) matches "policy" and "policies"
-    RULE: /\b(can i|allowed|permitted|polic(y|ies)|rule(s)?|criteria|eligible|limit(s)?|restriction(s)?|legal|forbidden|must|should i)\b/i,
+    GREETING:
+      /\b(hi|hello|hey|hii|hai|good\s*(morning|afternoon|evening|night)|how\s*(are|r)\s*(you|u)|how\s*(r|are)\s*u|hru|hr\s*u|whats?\s*up|sup|how\s*is\s*it\s*going|how\s*do\s*you\s*do)\b/i,
 
-    // (s)? matches "step" and "steps"
-    // (ure|ures) matches "procedure" and "procedures"
+    // Rules / policy related
+    RULE: /\b(can\s*i|allowed|law(s)|permitted|polic(y|ies)|rule(s)?|criteria|eligible|limit(s)?|restriction(s)?|legal|forbidden|must|should\s*i)\b/i,
+
+    // Process / how-to related
     PROCESS_FLOW:
-      /\b(how to|step(s)?|process(es)?|proced(ure|ures)|flow(s)?|guide(s)?|instruction(s)?|sequence(s)?|stage(s)?|next|way to|get started)\b/i,
+      /\b(how\s*to|step(s)?|process(es)?|proced(ure|ures)|flow(s)?|guide(s)?|instruction(s)?|sequence(s)?|stage(s)?|next|way\s*to|get\s*started)\b/i,
   };
 
   let intents = [];
-
+  if (patterns.GREETING.test(text)) intents.push("GREET");
   if (patterns.PROCESS_FLOW.test(text)) intents.push("PROCESS");
   if (patterns.RULE.test(text)) intents.push("RULE");
 
   return intents.length > 0 ? intents : ["API"];
 }
+
+const GREET_MSG = `Hello, I am Sewak Singh, an AI assistant designed to help you with iHRMS Punjab services. 
+          I can assist you with services such as Leave Management, Pay Slip Generation, Employee Profile Management, 
+          ACR Management, and other HR-related Services. How can I help you today?`;
 
 export class BotService {
   async doVectorApiCall(userMessage) {
@@ -45,13 +50,14 @@ export class BotService {
       let data = await response.json();
       if (data.length > 0) {
         if (data[0].id == "24") {
-          return `Hello, I am Sewak Singh, an AI assistant designed to help you with iHRMS Punjab services. 
-          I can assist you with services such as Leave Management, Pay Slip Generation, Employee Profile Management, 
-          ACR Management, and other HR-related Services. How can I help you today?`;
+          return { type: "text", data: GREET_MSG };
         } else {
           console.log(data[0].id - 1);
           const apiid = data[0].id - 1;
-          return `${apiid}`;
+          return {
+            type: "text",
+            data: `${apiid}`,
+          };
         }
       } else {
         return await this.doLLMApiCall(userMessage);
@@ -80,8 +86,9 @@ export class BotService {
 
       let data = await response.json();
       if (data.references.length > 0) {
-        return data.response;
+        return { type: "docs", docs: data.references, data: data.response };
       } else {
+        localStorage.setItem("rule", "rule");
         return await this.doLLMApiCall(userMessage);
       }
     } catch (error) {
@@ -107,7 +114,14 @@ export class BotService {
       });
 
       let data = await response.json();
-      return data;
+      if (data.length > 0) {
+        return {
+          type: "text",
+          data: `Query: ${data[0].question}<br>Solution : ${data[0].answer_eng}`,
+        };
+      } else {
+        return { type: "text", data: "No Procedure Found" };
+      }
     } catch (error) {
       throw error;
     }
@@ -119,6 +133,7 @@ export class BotService {
       "User-Agent": "Thunder Client (https://www.thunderclient.com)",
       "Content-Type": "application/json",
     };
+    localStorage.setItem("model", "ollama");
     let bodyContent = JSON.stringify(PromptTemplates(userMessage));
 
     let SERVER_URL = constants.SERVER_URL;
@@ -130,10 +145,10 @@ export class BotService {
         headers: headersList,
       });
 
-      let data = await response.json();
-      // console.log("Response Status:", data);
+      let data = response;
+      console.log("Response Status:", data.length);
       // let jsondata = JSON.parse(data);
-      return data;
+      return { type: "text", data: data };
     } catch (error) {
       throw error;
     }
@@ -143,6 +158,8 @@ export class BotService {
     const type = diagnoseQuery(userMessage);
     console.log("Diagnosed Query Type:", type);
     switch (type[0]) {
+      case "GREET":
+        return { type: "text", data: GREET_MSG };
       case "RULE":
         return await this.doVectorRuleCall(userMessage);
       case "PROCESS":
@@ -155,7 +172,7 @@ export class BotService {
           return await this.doVectorApiCall(userMessage);
         }
       default:
-        return "Unable to process this request.";
+        return { type: "text", data: "Unable to process this request." };
     }
   }
 

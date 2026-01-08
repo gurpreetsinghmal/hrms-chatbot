@@ -5,6 +5,7 @@ import { Endpoints } from "./endpoints.js";
 import { Templates } from "./Templates.js";
 import { runProcessFlow } from "./runProcessFlow.js";
 import { checkUserEncrptedAndFetch } from "./loggeduser.js";
+import { buildDownloadPdf } from "./components/_buildDownloadPdf.js";
 
 // Chat Storage
 export const chatStorage = {
@@ -357,7 +358,36 @@ async function simulateBotResponse(userMessage) {
   await botService
     .doApiCall(userMessage)
     .then((s) => {
-      botResponse = normalizeBotHtml(s);
+      switch (s.type) {
+        case "text":
+          console.log(s.data);
+          botResponse = normalizeBotHtml(s.data);
+          break;
+        case "docs":
+          botResponse = normalizeBotHtml(s.data);
+          if (s.docs.length > 0) {
+            let formattedtitle = `
+                <div style="margin-top:10px;border-left: 5px solid #007bff; background: #f0f7ff; padding: 12px 20px; color: #1a1a1a; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 0 4px 4px 0; margin-bottom: 10px;">
+            <span style="color: #007bff; font-weight: bold; font-family: sans-serif;">
+                <i class="fa-solid fa-file-pdf" style="margin-right: 8px;"></i>
+                Supporting Documents ${s.docs.length} Pages:
+            </span></div>`;
+            botResponse += formattedtitle;
+            botResponse += `
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start; padding: 10px;">
+            `;
+
+            s.docs.forEach((item) => {
+              botResponse += buildDownloadPdf(item);
+            });
+            botResponse += `</div>`;
+          }
+
+          break;
+        default:
+          botResponse = "Service under maintainance";
+          break;
+      }
     })
     .catch((e) => {
       console.log(e);
@@ -539,30 +569,30 @@ async function simulateBotResponse(userMessage) {
     // ----------------------------------------------------------------------
 
     botResponse = botResponse.trim();
-    if (botResponse == "rule") {
-      debugger;
-      localStorage.setItem("rule", "rule");
-      console.log("rule asked for => ", userMessage);
+    // if (botResponse == "rule") {
+    //   debugger;
+    //   localStorage.setItem("rule", "rule");
+    //   console.log("rule asked for => ", userMessage);
 
-      //----rule API
-      showTypingIndicator()
-      await botService
-        .doApiCall(userMessage)
-        .then((s) => {
-          botResponse = normalizeBotHtml(s);
-        })
-        .catch((e) => {
-          console.log(e);
-          botResponse = "Something went wrong,Try after few seconds";
-        })
-        .finally(() => {
-          // Hides the indicator before adding the message
-          hideTypingIndicator();
-          localStorage.removeItem("rule");
-        });
+    //   //----rule API
+    //   showTypingIndicator();
+    //   await botService
+    //     .doApiCall(userMessage)
+    //     .then((s) => {
+    //       botResponse = normalizeBotHtml(s);
+    //     })
+    //     .catch((e) => {
+    //       console.log(e);
+    //       botResponse = "Something went wrong,Try after few seconds";
+    //     })
+    //     .finally(() => {
+    //       // Hides the indicator before adding the message
+    //       hideTypingIndicator();
+    //       localStorage.removeItem("rule");
+    //     });
 
-      //---rule API Ends
-    }
+    //   //---rule API Ends
+    // }
 
     chatStorage.addMessage("bot", botResponse);
     renderMessages();
@@ -624,9 +654,7 @@ function normalizeBotHtml(html) {
   //     `${space}<a href="${url}" target="_blank" class="bot-link-btn">View / Download</a>`
   // );
 
-  if (localStorage.getItem("rule") == "rule") {
-    html = formatIhrmsResponse(html);
-  }
+  html = formatIhrmsResponse(html);
 
   return html;
 }

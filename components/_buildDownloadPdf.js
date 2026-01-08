@@ -3,24 +3,22 @@ import { constants } from "../constants.js";
 export function buildDownloadPdf(data) {
   let pdfurl;
   if (data.type.toLowerCase() == "pdf") {
-    let filename = `Payslip_${data.month}_${data.year}.pdf`;
+    pdfurl = data.pdfurl;
+    const normalized = pdfurl.replace(/\\/g, "/");
+    const filename = new URL(normalized).pathname.split("/").pop();
     let URI =
       constants.SERVER_URL +
       "/proxy-pdf?url=" +
       encodeURIComponent(data.pdfurl);
     pdfurl = `
-    <div class="bot-link-btn" style="cursor:pointer" onclick="forceDownloadPdf('${URI}', '${filename}')">
+    <div class="bot-link-btn" style="cursor:pointer;" onclick="forceDownloadPdf('${URI}', '${filename}')">
         <i class="fa-solid fa-file-arrow-down" style="color:white"></i>
-          <span>Download</span>
+          <span>Page ${data.page_no}</span>
     </div>
     `;
   }
 
-  let html = `<b>Your document is ready. Please download it by clicking the button below.</b>
-  <br/>
- <br/>
-  ${pdfurl}
-  `;
+  let html = `${pdfurl}`;
 
   return html;
 }
