@@ -1,17 +1,125 @@
 import { constants } from "./constants.js";
 import { checkUserEncrptedAndFetch } from "./loggeduser.js";
 import { PromptTemplates } from "./promptTemplates.js";
+
+function diagnoseQuery(query) {
+  const text = query.toLowerCase().trim();
+
+  const patterns = {
+    // (s)? matches "rule" and "rules"
+    // (y|ies) matches "policy" and "policies"
+    RULE: /\b(can i|allowed|permitted|polic(y|ies)|rule(s)?|criteria|eligible|limit(s)?|restriction(s)?|legal|forbidden|must|should i)\b/i,
+
+    // (s)? matches "step" and "steps"
+    // (ure|ures) matches "procedure" and "procedures"
+    PROCESS_FLOW:
+      /\b(how to|step(s)?|process(es)?|proced(ure|ures)|flow(s)?|guide(s)?|instruction(s)?|sequence(s)?|stage(s)?|next|way to|get started)\b/i,
+  };
+
+  let intents = [];
+
+  if (patterns.PROCESS_FLOW.test(text)) intents.push("PROCESS");
+  if (patterns.RULE.test(text)) intents.push("RULE");
+
+  return intents.length > 0 ? intents : ["API"];
+}
+
 export class BotService {
-  async doApiCall(userMessage) {
+  async doVectorApiCall(userMessage) {
     let headersList = {
       Accept: "*/*",
       "User-Agent": "Thunder Client (https://www.thunderclient.com)",
       "Content-Type": "application/json",
     };
+    let SERVER_URL = constants.SERVER_URL;
 
+    let bodyContent = JSON.stringify({ query: userMessage });
+
+    try {
+      let response = await fetch(SERVER_URL + "/search", {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList,
+      });
+
+      let data = await response.json();
+      if (data.length > 0) {
+        if (data[0].id == "24") {
+          return `Hello, I am Sewak Singh, an AI assistant designed to help you with iHRMS Punjab services. 
+          I can assist you with services such as Leave Management, Pay Slip Generation, Employee Profile Management, 
+          ACR Management, and other HR-related Services. How can I help you today?`;
+        } else {
+          console.log(data[0].id - 1);
+          const apiid = data[0].id - 1;
+          return `${apiid}`;
+        }
+      } else {
+        return await this.doLLMApiCall(userMessage);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async doVectorRuleCall(userMessage) {
+    let headersList = {
+      Accept: "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      "Content-Type": "application/json",
+    };
+    let SERVER_URL = constants.SERVER_URL;
+
+    let bodyContent = JSON.stringify({ query: userMessage });
+
+    try {
+      let response = await fetch(SERVER_URL + "/search-rule", {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList,
+      });
+
+      let data = await response.json();
+      if (data.references.length > 0) {
+        return data.response;
+      } else {
+        return await this.doLLMApiCall(userMessage);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async doVectorProcessCall(userMessage) {
+    let headersList = {
+      Accept: "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      "Content-Type": "application/json",
+    };
+    let SERVER_URL = constants.SERVER_URL;
+
+    let bodyContent = JSON.stringify({ query: userMessage });
+
+    try {
+      let response = await fetch(SERVER_URL + "/search-process", {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList,
+      });
+
+      let data = await response.json();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async doLLMApiCall(userMessage) {
+    let headersList = {
+      Accept: "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      "Content-Type": "application/json",
+    };
     let bodyContent = JSON.stringify(PromptTemplates(userMessage));
-
-    // console.log("Request Body:", bodyContent);
 
     let SERVER_URL = constants.SERVER_URL;
 
@@ -28,6 +136,26 @@ export class BotService {
       return data;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async doApiCall(userMessage) {
+    const type = diagnoseQuery(userMessage);
+    console.log("Diagnosed Query Type:", type);
+    switch (type[0]) {
+      case "RULE":
+        return await this.doVectorRuleCall(userMessage);
+      case "PROCESS":
+        return await this.doVectorProcessCall(userMessage);
+      case "API":
+        const model = localStorage.getItem("model") || "ollama";
+        if (model == "gemini") {
+          return await this.doLLMApiCall(userMessage);
+        } else {
+          return await this.doVectorApiCall(userMessage);
+        }
+      default:
+        return "Unable to process this request.";
     }
   }
 

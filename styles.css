@@ -29,9 +29,12 @@ body {
     "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: end;
+  align-items: end;
   padding: 20px;
+  background-image: url(./assets/bg.png);
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 /* Avatar Button */
@@ -809,7 +812,7 @@ body {
 }
 
 .sewak-pic {
-  height: 120%;
+  height: 100%;
 }
 
 /* ===============================
