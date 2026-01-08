@@ -360,7 +360,6 @@ async function simulateBotResponse(userMessage) {
     .then((s) => {
       switch (s.type) {
         case "text":
-          console.log(s.data);
           botResponse = normalizeBotHtml(s.data);
           break;
         case "docs":
