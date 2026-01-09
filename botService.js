@@ -74,8 +74,8 @@ export class BotService {
       "Content-Type": "application/json",
     };
     let SERVER_URL = constants.SERVER_URL;
-
-    let bodyContent = JSON.stringify({ query: userMessage });
+    let model = localStorage.getItem("model") || "ollama";
+    let bodyContent = JSON.stringify({ query: userMessage, model: model });
 
     try {
       let response = await fetch(SERVER_URL + "/search-rule", {
@@ -87,6 +87,8 @@ export class BotService {
       let data = await response.json();
       if (data.references.length > 0) {
         return { type: "docs", docs: data.references, data: data.response };
+      } else if (data.response && data.response.length > 0) {
+        return { type: "text", data: data.response };
       } else {
         localStorage.setItem("rule", "rule");
         return await this.doLLMApiCall(userMessage);
@@ -133,7 +135,7 @@ export class BotService {
       "User-Agent": "Thunder Client (https://www.thunderclient.com)",
       "Content-Type": "application/json",
     };
-    localStorage.setItem("model", "ollama");
+
     let bodyContent = JSON.stringify(PromptTemplates(userMessage));
 
     let SERVER_URL = constants.SERVER_URL;
@@ -144,9 +146,9 @@ export class BotService {
         body: bodyContent,
         headers: headersList,
       });
-
-      let data = response;
-      console.log("Response Status:", data.length);
+      console.log("Response Status:", response);
+      let data = response.json();
+      // console.log("Response Status:", data.length);
       // let jsondata = JSON.parse(data);
       return { type: "text", data: data };
     } catch (error) {
